@@ -3,7 +3,6 @@
     "private": true,
     "type": "module",
     "scripts": {
-
         "dev": "nuxt dev",
         "build": "nuxt build",
         "lint": "eslint . --fix && npx prettier --write .",
@@ -11,14 +10,12 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare"
     },
-
-    "dependencies": {},
-
     "devDependencies": {
-
-        "@tripteki/prettier-config": "^1.0.0",
+        "@invictus.codes/nuxt-vuetify": "^0.3.0",
+        "@nuxtjs/i18n": "^8.0.0",
         "@nuxtjs/eslint-config": "^12.0.0",
         "@nuxtjs/eslint-config-typescript": "^12.1.0",
+        "@tripteki/prettier-config": "^1.0.0",
         "eslint": "^8.56.0",
         "nuxt": "^3.9.0",
         "prettier": "^3.1.1",

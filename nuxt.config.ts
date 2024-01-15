@@ -1,5 +1,7 @@
 "use strict";
 
+import i18n from "./nuxt-i18n.config";
+
 export default defineNuxtConfig ({
 
     typescript: {
@@ -19,6 +21,23 @@ export default defineNuxtConfig ({
 
             appName: process.env.NUXT_PUBLIC_APP_NAME || "codebase",
             env: process.env.NUXT_PUBLIC_APP_ENV || "production",
+            language: process.env.NUXT_PUBLIC_APP_LANG || "en",
         },
     },
+
+    modules: [
+
+        "@invictus.codes/nuxt-vuetify",
+        "@nuxtjs/i18n",
+    ],
+
+    vuetify: {
+
+        moduleOptions: {
+
+            treeshaking: true,
+        },
+    },
+
+    i18n,
 });
