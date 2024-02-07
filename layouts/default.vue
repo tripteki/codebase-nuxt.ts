@@ -1,32 +1,67 @@
-<script setup>
+<script>
 
-const configuration = useRuntimeConfig ();
+// Composables //
 
-useHead ({
+// Mounting //
 
-    htmlAttrs: {
+setup (() => {
 
-        lang: configuration.public.language,
-    },
+    // const ... = ref (0);
+    // const ... = reactive ({});
+    // const ... = () => {};
+    // const ... = computed (() => ...);
 
-    title: "Default",
-    titleTemplate: 'Vue | %s',
+    return {};
+});
+
+onBeforeMount (() => {
+
+    //
+});
+
+onMounted (() => {
+
+    //
+});
+
+// Updating //
+
+setup (() => {
+
+    // const ... = watch (..., () => {});
+    // watchEffect (() => {});
+
+    return {};
+});
+
+onBeforeUpdate (() => {
+
+    //
+});
+
+onUpdated (() => {
+
+    //
+});
+
+// Unmounting //
+
+onBeforeUnmount (() => {
+
+    //
+});
+
+onUnmounted (() => {
+
+    //
 });
 
 </script>
 
 <template>
-<v-container>
-    <v-layout class="text-center">
-        <v-system-bar window>...</v-system-bar>
-        <v-app-bar title="..."></v-app-bar>
-        <v-navigation-drawer><v-list>...</v-list></v-navigation-drawer>
+    <v-layout>
         <v-main>
             <slot />
         </v-main>
-        <v-spacer></v-spacer>
-        <v-footer app>...</v-footer>
-        <v-bottom-navigation>...</v-bottom-navigation>
     </v-layout>
-</v-container>
 </template>

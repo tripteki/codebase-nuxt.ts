@@ -1,6 +1,7 @@
 "use strict";
 
 import i18n from "./nuxt-i18n.config";
+import seo from "./nuxt-seo.config";
 
 export default defineNuxtConfig ({
 
@@ -20,6 +21,7 @@ export default defineNuxtConfig ({
         public: {
 
             appName: process.env.NUXT_PUBLIC_APP_NAME || "codebase",
+            appUrl: process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost",
             env: process.env.NUXT_PUBLIC_APP_ENV || "production",
             language: process.env.NUXT_PUBLIC_APP_LANG || "en",
         },
@@ -29,6 +31,7 @@ export default defineNuxtConfig ({
 
         "@invictus.codes/nuxt-vuetify",
         "@nuxtjs/i18n",
+        "@nuxtjs/seo",
     ],
 
     vuetify: {
@@ -40,4 +43,6 @@ export default defineNuxtConfig ({
     },
 
     i18n,
+
+    ...seo,
 });

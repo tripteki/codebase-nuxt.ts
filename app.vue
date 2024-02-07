@@ -1,4 +1,4 @@
-<script setup>
+<script>
 
 // https://nuxt.com/docs/api/components/client-only //
 

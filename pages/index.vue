@@ -1,12 +1,13 @@
 <script setup>
 
-useHead ({
+definePageMeta ({
 
+    layout: "dashboard",
     title: "Index",
 });
 
 </script>
 
 <template>
-    <div>{{ $t ("common.welcome") }}</div>
+    <div class="text-center">{{ $t ("common.welcome") }}</div>
 </template>
