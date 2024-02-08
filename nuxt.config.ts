@@ -22,6 +22,7 @@ export default defineNuxtConfig ({
 
             appName: process.env.NUXT_PUBLIC_APP_NAME || "codebase",
             appUrl: process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost",
+            baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://api.backend.localhost",
             env: process.env.NUXT_PUBLIC_APP_ENV || "production",
             language: process.env.NUXT_PUBLIC_APP_LANG || "en",
         },
