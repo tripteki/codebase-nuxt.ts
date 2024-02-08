@@ -33,7 +33,13 @@ export default defineNuxtConfig ({
         "@invictus.codes/nuxt-vuetify",
         "@nuxtjs/i18n",
         "@nuxtjs/seo",
+        "@pinia/nuxt",
     ],
+
+    pinia: {
+
+        storesDirs: [ "./stores/**", ],
+    },
 
     vuetify: {
 
