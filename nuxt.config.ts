@@ -30,7 +30,6 @@ export default defineNuxtConfig ({
 
     modules: [
 
-        "@invictus.codes/nuxt-vuetify",
         "@nuxtjs/i18n",
         "@nuxtjs/seo",
         "@pinia/nuxt",
@@ -41,15 +40,21 @@ export default defineNuxtConfig ({
         storesDirs: [ "./stores/**", ],
     },
 
-    vuetify: {
-
-        moduleOptions: {
-
-            treeshaking: true,
-        },
-    },
-
     i18n,
 
     ...seo,
+
+    postcss: {
+
+        plugins: {
+
+            tailwindcss: {},
+            autoprefixer: {},
+        },
+    },
+
+    css: [
+
+        "~/assets/css/main.css",
+    ],
 });

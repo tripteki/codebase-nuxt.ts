@@ -9,5 +9,5 @@ definePageMeta ({
 </script>
 
 <template>
-    <div class="text-center">{{ $t ("common.welcome") }}</div>
+    <div class="underline">{{ $t ("common.welcome") }}</div>
 </template>

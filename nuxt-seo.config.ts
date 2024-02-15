@@ -7,6 +7,21 @@ const seoConfig = {
         head: {
 
             titleTemplate: 'Vue | %s',
+
+            link: [
+
+                {
+                    rel: "icon", type: "image/png", href: "/favicon.png",
+                },
+            ],
+
+            script: [
+
+                {
+                    async: true,
+                    src: "https://unpkg.com/@material-tailwind/html/scripts/ripple.js",
+                },
+            ],
         },
     },
 
