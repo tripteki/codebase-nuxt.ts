@@ -2,9 +2,7 @@
 
 "use strict";
 
-import withMT from "@material-tailwind/html/utils/withMT";
-
-export default withMT ({
+export default {
 
     content: [
 
@@ -22,4 +20,4 @@ export default withMT ({
 
         extend: {},
     },
-});
+};
