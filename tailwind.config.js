@@ -6,6 +6,8 @@ export default {
 
     content: [
 
+      "./node_modules/preline/preline.js",
+
       "./components/**/*.{js,ts,vue}",
       "./layouts/**/*.vue",
       "./pages/**/*.vue",
@@ -14,7 +16,10 @@ export default {
       "./error.vue",
     ],
 
-    plugins: [],
+    plugins: [
+
+      require ("preline/plugin"),
+    ],
 
     theme: {
 

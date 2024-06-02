@@ -35,6 +35,11 @@ export default defineNuxtConfig ({
         "@pinia/nuxt",
     ],
 
+    plugins: [
+
+        "~/plugins/preline.client.ts",
+    ],
+
     pinia: {
 
         storesDirs: [ "./stores/**", ],
