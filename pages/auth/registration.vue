@@ -1,3 +1,128 @@
+<script setup>
+
+const isLoading = ref (false);
+const isLoaded = ref (false);
+const form = reactive (
+{
+    name:
+    {
+        value: "",
+        validation: "",
+        isError: false,
+    },
+
+    email:
+    {
+        value: "",
+        validation: "",
+        isError: false,
+    },
+
+    password:
+    {
+        value: "",
+        validation: "",
+        isError: false,
+    },
+
+    passwordConfirmation:
+    {
+        value: "",
+        validation: "",
+        isError: false,
+    },
+
+    checkboxAgreement:
+    {
+        value: false,
+        validation: "",
+        isError: false,
+    },
+});
+
+definePageMeta (
+{
+    title: "Registration",
+
+    auth: {
+
+        unauthenticatedOnly: true,
+        navigateAuthenticatedTo: "/admin/dashboard",
+    },
+});
+
+const { signUp, } = useAuth ();
+
+const registration = async (e) =>
+{
+    e.preventDefault ();
+
+    try {
+
+        const data = await signUp ({
+
+            name: form.name.value,
+            email: form.email.value,
+            password: form.password.value,
+            password_confirmation: form.passwordConfirmation.value,
+            agreement: form.checkboxAgreement.value,
+        },
+        {
+            callbackUrl: "/auth/login",
+        });
+
+    } catch (throwable) {
+
+        const { data, } = throwable.response._data;
+
+        if (data.name) {
+
+            form.name.validation = data.name[0];
+            form.name.isError = true;
+
+        } else {
+
+            form.name.validation = "";
+            form.name.isError = false;
+        }
+
+        if (data.email) {
+
+            form.email.validation = data.email[0];
+            form.email.isError = true;
+
+        } else {
+
+            form.email.validation = "";
+            form.email.isError = false;
+        }
+
+        if (data.password) {
+
+            form.password.validation = data.password[0];
+            form.password.isError = true;
+
+        } else {
+
+            form.password.validation = "";
+            form.password.isError = false;
+        }
+
+        if (data.passwordConfirmation) {
+
+            form.passwordConfirmation.validation = data.passwordConfirmation[0];
+            form.passwordConfirmation.isError = true;
+
+        } else {
+
+            form.passwordConfirmation.validation = "";
+            form.passwordConfirmation.isError = false;
+        }
+    };
+};
+
+</script>
+
 <template>
 <div class="container mx-auto">
     <div class="mt-7 bg-white border border-gray-200 rounded-xl shadow-sm light:bg-neutral-900 light:border-neutral-700">
@@ -28,18 +153,34 @@
             <!-- Form -->
             <form>
                 <div class="grid gap-y-4">
-                <!-- E-Mail Form -->
+
+                <!-- Name Form -->
                 <div>
-                    <label for="email" class="block text-sm mb-2 light:text-white">E-Mail</label>
+                    <label for="name" class="block text-sm mb-2 light:text-white">Full Name</label>
                     <div class="relative">
-                    <input type="email" id="email" name="email" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="email-error">
+                    <input v-model="form.name.value" type="text" id="name" name="name" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="name-error">
                     <div class="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
                         <svg class="size-5 text-red-500" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                         </svg>
                     </div>
                     </div>
-                    <p class="hidden text-xs text-red-600 mt-2" id="email-error">Please include a valid email address so we can get back to you</p>
+                    <p v-if="form.name.isError" class="text-xs text-red-600 mt-2" id="name-error" v-text="form.name.validation"></p>
+                </div>
+                <!-- Name Form -->
+
+                <!-- E-Mail Form -->
+                <div>
+                    <label for="email" class="block text-sm mb-2 light:text-white">E-Mail</label>
+                    <div class="relative">
+                    <input v-model="form.email.value" type="email" id="email" name="email" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="email-error">
+                    <div class="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
+                        <svg class="size-5 text-red-500" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                        </svg>
+                    </div>
+                    </div>
+                    <p v-if="form.email.isError" class="text-xs text-red-600 mt-2" id="email-error" v-text="form.email.validation"></p>
                 </div>
                 <!-- E-Mail Form -->
 
@@ -47,14 +188,14 @@
                 <div>
                     <label for="password" class="block text-sm mb-2 light:text-white">Password</label>
                     <div class="relative">
-                    <input type="password" id="password" name="password" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="password-error">
+                    <input v-model="form.password.value" type="password" id="password" name="password" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="password-error">
                     <div class="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
                         <svg class="size-5 text-red-500" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                         </svg>
                     </div>
                     </div>
-                    <p class="hidden text-xs text-red-600 mt-2" id="password-error">8+ characters required</p>
+                    <p v-if="form.password.isError" class="text-xs text-red-600 mt-2" id="password-error" v-text="form.password.validation"></p>
                 </div>
                 <!-- Password Form -->
 
@@ -62,33 +203,34 @@
                 <div>
                     <label for="confirm-password" class="block text-sm mb-2 light:text-white">Password Confirmation</label>
                     <div class="relative">
-                    <input type="password" id="confirm-password" name="confirm-password" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="confirm-password-error">
+                    <input v-model="form.passwordConfirmation.value" type="password" id="confirm-password" name="confirm-password" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none light:bg-neutral-900 light:border-neutral-700 light:text-neutral-400 light:placeholder-neutral-500 light:focus:ring-neutral-600" required aria-describedby="confirm-password-error">
                     <div class="hidden absolute inset-y-0 end-0 pointer-events-none pe-3">
                         <svg class="size-5 text-red-500" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
                         </svg>
                     </div>
                     </div>
-                    <p class="hidden text-xs text-red-600 mt-2" id="confirm-password-error">Password does not match the password</p>
+                    <p v-if="form.passwordConfirmation.isError" class="text-xs text-red-600 mt-2" id="confirm-password-error" v-text="form.passwordConfirmation.validation"></p>
                 </div>
                 <!-- Password Confirmation Form -->
 
-                <!-- Term Condition Checkbox Form -->
+                <!-- Agreement Checkbox Form -->
                 <div class="flex items-center">
                     <div class="flex">
-                    <input id="remember-me" name="remember-me" type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 light:bg-neutral-800 light:border-neutral-700 light:checked:bg-blue-500 light:checked:border-blue-500 light:focus:ring-offset-gray-800">
+                    <input id="agreement" name="agreement" type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 light:bg-neutral-800 light:border-neutral-700 light:checked:bg-blue-500 light:checked:border-blue-500 light:focus:ring-offset-gray-800">
                     </div>
                     <div class="ms-3">
-                    <label for="remember-me" class="text-sm light:text-white">I accept the <a class="text-blue-600 decoration-2 hover:underline font-medium light:text-blue-500" href="#">Terms and Conditions</a></label>
+                    <label for="agreement" class="text-sm light:text-white">I accept the <a class="text-blue-600 decoration-2 hover:underline font-medium light:text-blue-500" href="#">Terms and Conditions</a></label>
                     </div>
                 </div>
-                <!-- Term Condition Checkbox Form -->
+                <!-- Agreement Checkbox Form -->
 
-                <button type="submit" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Sign up</button>
+                <button @click="registration" type="submit" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Sign up</button>
                 </div>
             </form>
             <!-- End Form -->
             </div>
+
         </div>
     </div>
 </div>

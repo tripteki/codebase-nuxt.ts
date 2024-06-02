@@ -13,9 +13,11 @@
             </div>
 
             <div class="mt-5">
+
             <!-- Form -->
             <form>
                 <div class="grid gap-y-4">
+
                 <!-- E-Mail Form -->
                 <div>
                     <label for="email" class="block text-sm mb-2 light:text-white">E-Mail</label>
@@ -35,6 +37,7 @@
                 </div>
             </form>
             <!-- End Form -->
+
             </div>
         </div>
     </div>

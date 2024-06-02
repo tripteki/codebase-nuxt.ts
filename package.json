@@ -24,7 +24,9 @@
         "nuxt-property-decorator": "^2.9.1",
         "lodash": "^4.17.21",
         "moment": "^2.30.1",
-        "axios": "^1.6.7"
+        "axios": "^1.6.7",
+        "@sidebase/nuxt-auth": "^0.7.2",
+        "next-auth": "^4.21.1"
     },
 
     "devDependencies": {
