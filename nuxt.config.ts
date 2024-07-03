@@ -33,12 +33,40 @@ export default defineNuxtConfig ({
         "@nuxtjs/i18n",
         "@nuxtjs/seo",
         "@pinia/nuxt",
+        "@sidebase/nuxt-auth",
     ],
 
     plugins: [
 
         "~/plugins/preline.client.ts",
     ],
+
+    auth: {
+
+        baseURL: process.env.NUXT_PUBLIC_AUTH_URL || "http://api.backend.localhost/auth",
+
+        provider: {
+
+            type: "local",
+
+            endpoints: {
+
+                signIn: { path: "/login", method: "post", },
+                signOut: { path: "/logout", method: "post", },
+                getSession: { path: "/me", method: "get", },
+            },
+
+            token: {
+
+                signInResponseTokenPointer: "/data/token",
+            },
+
+            pages: {
+
+                login: "/auth/login",
+            },
+        },
+    },
 
     pinia: {
 

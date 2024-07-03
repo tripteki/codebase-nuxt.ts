@@ -6,6 +6,11 @@ definePageMeta ({
     title: "Index",
 });
 
+onMounted (async () =>
+{
+    await navigateTo ('/auth/login');
+});
+
 </script>
 
 <template>
