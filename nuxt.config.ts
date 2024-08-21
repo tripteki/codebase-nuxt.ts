@@ -35,6 +35,7 @@ export default defineNuxtConfig ({
         "@pinia/nuxt",
         "@sidebase/nuxt-auth",
         "vuetify-nuxt-module",
+        "@nuxtjs/device",
     ],
 
     plugins: [
