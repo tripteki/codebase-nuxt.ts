@@ -34,6 +34,7 @@ export default defineNuxtConfig ({
         "@nuxtjs/seo",
         "@pinia/nuxt",
         "@sidebase/nuxt-auth",
+        "vuetify-nuxt-module",
     ],
 
     plugins: [
@@ -76,6 +77,19 @@ export default defineNuxtConfig ({
     i18n,
 
     ...seo,
+
+    vuetify: {
+
+        moduleOptions: {
+
+            treeshaking: true,
+        },
+
+        vuetifyOptions: {
+
+            customVariables: [ '~/assets/css/variables.scss', ],
+        },
+    },
 
     postcss: {
 
