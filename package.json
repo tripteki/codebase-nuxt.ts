@@ -34,7 +34,8 @@
         "nuxt-toastify": "^1.0.0",
         "@tiptap/starter-kit": "^2.6.5",
         "@tiptap/pm": "^2.6.5",
-        "@tiptap/vue-3": "^2.6.5"
+        "@tiptap/vue-3": "^2.6.5",
+        "atrament": "^4.4.1"
     },
 
     "devDependencies": {
