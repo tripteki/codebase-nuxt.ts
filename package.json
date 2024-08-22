@@ -30,7 +30,8 @@
         "vuetify-nuxt-module": "^0.17.1",
         "chart.js": "^4.4.4",
         "vue-chartjs": "^5.3.1",
-        "@nuxtjs/device": "^3.1.1"
+        "@nuxtjs/device": "^3.1.1",
+        "nuxt-toastify": "^1.0.0"
     },
 
     "devDependencies": {

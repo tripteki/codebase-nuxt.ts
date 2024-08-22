@@ -36,6 +36,7 @@ export default defineNuxtConfig ({
         "@sidebase/nuxt-auth",
         "vuetify-nuxt-module",
         "@nuxtjs/device",
+        "nuxt-toastify",
     ],
 
     plugins: [
@@ -105,4 +106,11 @@ export default defineNuxtConfig ({
 
         "~/assets/css/main.css",
     ],
+
+    toastify: {
+
+        autoClose: 2000,
+        theme: 'auto',
+        position: 'top-center',
+    },
 });
