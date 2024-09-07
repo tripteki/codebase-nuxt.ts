@@ -32,7 +32,10 @@
         "@tiptap/starter-kit": "^2.6.5",
         "@tiptap/pm": "^2.6.5",
         "@tiptap/vue-3": "^2.6.5",
-        "atrament": "^4.4.1"
+        "atrament": "^4.4.1",
+        "flowbite": "^2.5.1",
+        "apexcharts": "^3.53.0",
+        "vue3-apexcharts": "^1.6.0"
     },
 
     "devDependencies": {

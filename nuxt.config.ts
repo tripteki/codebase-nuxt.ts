@@ -40,7 +40,7 @@ export default defineNuxtConfig ({
 
     plugins: [
 
-        //
+        '~/plugins/apexchart.client.ts',
     ],
 
     auth: {

@@ -15,4 +15,7 @@ onMounted (async () =>
 
 <template>
     <div class="underline">{{ $t ("common.welcome") }}</div>
+    <ClientOnly>
+        <apexchart />
+    </ClientOnly>
 </template>
