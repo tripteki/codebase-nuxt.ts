@@ -7,6 +7,7 @@
 <template>
     <Head>
         <meta name="robots" content="noindex" />
+        <VitePwaManifest />
     </Head>
     <Body>
         <NuxtLayout>

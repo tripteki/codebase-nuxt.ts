@@ -30,6 +30,7 @@ export default defineNuxtConfig ({
 
     modules: [
 
+        "@vite-pwa/nuxt",
         "@nuxtjs/i18n",
         "@nuxtjs/seo",
         "@pinia/nuxt",
@@ -42,6 +43,53 @@ export default defineNuxtConfig ({
 
         '~/plugins/apexchart.client.ts',
     ],
+
+    pwa: {
+
+        devOptions: {
+
+            enabled: true,
+            type: "module",
+        },
+
+        manifest: {
+
+            name: process.env.NUXT_PUBLIC_APP_NAME || "codebase",
+            short_name: process.env.NUXT_PUBLIC_APP_NAME || "codebase",
+
+            id: "/",
+            start_url: "/",
+            display: "standalone",
+            orientation: "portrait",
+            theme_color: "#FFFFFF",
+            background_color: "#FFFFFF",
+
+            icons: [
+
+                {
+                    src: "/manifest/android-chrome-192x192.png",
+                    sizes: "192x192",
+                    type: "image/png",
+                    purpose: "any",
+                },
+                {
+                    src: "/manifest/android-chrome-384x384.png",
+                    sizes: "384x384",
+                    type: "image/png",
+                },
+                {
+                    src: "/manifest/icon-512x512.png",
+                    sizes: "512x512",
+                    type: "image/png",
+                },
+            ],
+        },
+
+        workbox: {
+
+            navigateFallback: "/",
+        },
+    },
 
     auth: {
 
