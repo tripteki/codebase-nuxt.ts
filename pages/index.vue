@@ -15,7 +15,7 @@ onMounted (async () =>
 
 <template>
     <div class="underline">{{ $t ("common.welcome") }}</div>
-    <ClientOnly>
+    <!-- <ClientOnly>
         <apexchart />
-    </ClientOnly>
+    </ClientOnly> -->
 </template>

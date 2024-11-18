@@ -77,7 +77,7 @@ export default defineNuxtConfig ({
 
     i18n,
 
-    ...seo,
+    ... seo,
 
     postcss: {
 
