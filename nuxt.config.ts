@@ -41,7 +41,7 @@ export default defineNuxtConfig ({
 
     plugins: [
 
-        '~/plugins/apexchart.client.ts',
+        "~/plugins/apexchart.client.ts",
     ],
 
     pwa: {
@@ -144,7 +144,7 @@ export default defineNuxtConfig ({
     toastify: {
 
         autoClose: 2000,
-        theme: 'auto',
-        position: 'top-center',
+        theme: "auto",
+        position: "top-center",
     },
 });

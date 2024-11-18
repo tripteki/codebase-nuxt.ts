@@ -105,7 +105,7 @@ const registration = async (e) =>
 
         let dataSuccess = data;
 
-        await navigateTo ('/auth/login');
+        await navigateTo ("/auth/login");
 
     } else if (dataIsError) {
 

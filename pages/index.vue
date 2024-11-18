@@ -8,7 +8,7 @@ definePageMeta ({
 
 onMounted (async () =>
 {
-    await navigateTo ('/auth/login');
+    await navigateTo ("/auth/login");
 });
 
 </script>

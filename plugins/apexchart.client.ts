@@ -1,6 +1,6 @@
 "use strict";
 
-import VueApexCharts from 'vue3-apexcharts';
+import VueApexCharts from "vue3-apexcharts";
 
 export default defineNuxtPlugin ((plugin) =>
 {
