@@ -147,4 +147,6 @@ export default defineNuxtConfig ({
         theme: "auto",
         position: "top-center",
     },
+
+    compatibilityDate: "2024-11-20",
 });

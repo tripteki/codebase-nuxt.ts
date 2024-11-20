@@ -1,10 +1,16 @@
 "use strict";
 
+enum SupportedLanguages {
+
+    en = "en",
+    id = "id",
+};
+
 const i18nConfig = {
 
-    langDir: "./lang",
+    langDir: "../lang",
 
-    defaultLocale: process.env.NUXT_PUBLIC_APP_LANG || "en",
+    defaultLocale: (process.env.NUXT_PUBLIC_APP_LANG as SupportedLanguages) || SupportedLanguages.en,
     locales: [
 
         {
