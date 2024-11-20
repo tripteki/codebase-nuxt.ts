@@ -1,7 +1,12 @@
 {
     "name": "codebase",
+    "version": "1.0.1",
     "private": true,
+    "description": "Project",
+    "author": "Anonymous <anonymous@email.com>",
+    "license": "UNLICENSED",
     "type": "module",
+
     "scripts": {
 
         "lint": "eslint . --fix && npx prettier --write .",
