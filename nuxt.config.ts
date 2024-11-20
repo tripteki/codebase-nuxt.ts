@@ -1,5 +1,6 @@
 "use strict";
 
+const { name, version, } = require ("./package.json");
 import i18n from "./nuxt-i18n.config";
 import seo from "./nuxt-seo.config";
 
@@ -20,7 +21,8 @@ export default defineNuxtConfig ({
 
         public: {
 
-            appName: process.env.NUXT_PUBLIC_APP_NAME || "codebase",
+            appName: process.env.NUXT_PUBLIC_APP_NAME || name || "codebase",
+            appVersion: process.env.NUXT_PUBLIC_APP_VERSION || version || "1.0.0",
             appUrl: process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost",
             baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://api.backend.localhost",
             env: process.env.NUXT_PUBLIC_APP_ENV || "production",
