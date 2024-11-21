@@ -104,6 +104,7 @@ const login = async (e) =>
         </div>
         <p v-if="isError" v-text="validationMessage"></p>
         <button @click="login" type="submit" class="border">{{ $t ("auth.sign_in") }}</button>
+        <v-btn icon="mdi-account" color="primary"></v-btn>
     </form>
 </div>
 </template>
