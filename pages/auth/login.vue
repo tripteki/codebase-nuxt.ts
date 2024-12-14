@@ -47,7 +47,7 @@ const login = async (e) =>
 
         const data = await signIn (
         {
-            email: formUserIdentity.value,
+            identifier: formUserIdentity.value,
             password: formUserPassword.value,
             remember: formCheckboxRemember.value,
         },
@@ -59,9 +59,9 @@ const login = async (e) =>
 
     } catch (throwable) {
 
-        const { data, } = throwable.response._data;
+        const { errors, } = throwable?.response?._data;
 
-        if (Object.keys (data).length) {
+        if (Object.keys (errors).length) {
 
             isError.value = true;
             validationMessage.value = t ("auth.failed");

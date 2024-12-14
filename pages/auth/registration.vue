@@ -109,7 +109,7 @@ const registration = async (e) =>
 
     } else if (dataIsError) {
 
-        let dataError = error?.response?.data?.data;
+        let dataError = error?.response?.data?.errors;
 
         form.name.isError = dataError?.name?.[0] ? true : false;
         form.name.validationMessage = dataError?.name?.[0];

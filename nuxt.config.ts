@@ -104,19 +104,19 @@ export default defineNuxtConfig ({
 
             endpoints: {
 
-                signIn: { path: "/login", method: "post", },
-                signOut: { path: "/logout", method: "post", },
-                getSession: { path: "/me", method: "get", },
+                signIn: { path: "login", method: "post", },
+                signOut: { path: "logout", method: "post", },
+                getSession: { path: "me", method: "get", },
             },
 
             token: {
 
-                signInResponseTokenPointer: "/data/token",
+                signInResponseTokenPointer: "/token",
             },
 
             pages: {
 
-                login: "/auth/login",
+                login: "auth/login",
             },
         },
     },
