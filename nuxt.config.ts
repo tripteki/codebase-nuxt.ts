@@ -6,6 +6,8 @@ import seo from "./nuxt-seo.config";
 
 export default defineNuxtConfig ({
 
+    buildDir: "public/.nuxt",
+
     typescript: {
 
         strict: true,

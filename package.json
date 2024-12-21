@@ -12,7 +12,7 @@
         "lint": "eslint . --fix && npx prettier --write .",
         "dev": "nuxt dev",
         "build": "nuxt build",
-        "generate": "nuxt generate",
+        "generate": "BUILD_STATIC=true nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "start": "nuxt start"
