@@ -2,20 +2,16 @@
 
 definePageMeta ({
 
-    layout: "dashboard",
-    title: "Index",
+    layout: "default",
 });
 
-onMounted (async () =>
-{
-    await navigateTo ("/auth/login");
+useHead ({
+
+    title: "Index",
 });
 
 </script>
 
 <template>
     <div class="underline">{{ $t ("common.welcome") }}</div>
-    <!-- <ClientOnly>
-        <apexchart />
-    </ClientOnly> -->
 </template>

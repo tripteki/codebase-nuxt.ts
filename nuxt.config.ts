@@ -40,7 +40,6 @@ export default defineNuxtConfig ({
         "@pinia/nuxt",
         "@sidebase/nuxt-auth",
         "@nuxtjs/device",
-        "vuetify-nuxt-module",
         "nuxt-toastify",
     ],
 
@@ -128,6 +127,7 @@ export default defineNuxtConfig ({
         storesDirs: [ "./stores/**", ],
     },
 
+    // @ts-ignore
     i18n,
 
     ... seo,
@@ -151,11 +151,6 @@ export default defineNuxtConfig ({
         autoClose: 2000,
         theme: "auto",
         position: "top-center",
-    },
-
-    vuetify: {
-
-        //
     },
 
     compatibilityDate: "2024-11-20",

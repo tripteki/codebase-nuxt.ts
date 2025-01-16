@@ -8,9 +8,13 @@ enum SupportedLanguages {
 
 const i18nConfig = {
 
+    detectBrowserLanguage: false,
+
+    strategy: "no_prefix",
+
     langDir: "../lang",
 
-    defaultLocale: (process.env.NUXT_PUBLIC_APP_LANG as SupportedLanguages) || SupportedLanguages.en,
+    defaultLocale: process.env.NUXT_PUBLIC_APP_LANG as SupportedLanguages,
     locales: [
 
         {
