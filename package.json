@@ -15,7 +15,8 @@
         "generate": "BUILD_STATIC=true nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "start": "nuxt start"
+        "start": "nuxt start",
+        "component": "npx shadcn-vue@latest add"
     },
 
     "dependencies": {
@@ -43,7 +44,15 @@
         "atrament": "^4.4.1",
         "flowbite": "^2.5.2",
         "apexcharts": "^4.0.0",
-        "vue3-apexcharts": "^1.7.0"
+        "vue3-apexcharts": "^1.7.0",
+        "clsx": "^2.1.1",
+        "class-variance-authority": "^0.7.1",
+        "@radix-icons/vue": "^1.0.0",
+        "radix-vue": "^1.9.12",
+        "@nuxtjs/color-mode": "^3.5.2",
+        "@nuxtjs/tailwindcss": "^6.13.1",
+        "tailwind-merge": "^2.6.0",
+        "tailwindcss-animate": "^1.0.7"
     },
 
     "devDependencies": {
@@ -58,6 +67,7 @@
         "prettier": "^3.3.3",
         "autoprefixer": "^10.4.20",
         "postcss": "^8.4.49",
-        "tailwindcss": "^3.4.15"
+        "tailwindcss": "^3.4.15",
+        "shadcn-nuxt": "^0.11.3"
     }
 }

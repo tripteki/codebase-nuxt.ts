@@ -41,6 +41,9 @@ export default defineNuxtConfig ({
         "@sidebase/nuxt-auth",
         "@nuxtjs/device",
         "nuxt-toastify",
+        "@nuxtjs/color-mode",
+        "@nuxtjs/tailwindcss",
+        "shadcn-nuxt",
     ],
 
     plugins: [
@@ -151,6 +154,12 @@ export default defineNuxtConfig ({
         autoClose: 2000,
         theme: "auto",
         position: "top-center",
+    },
+
+    shadcn: {
+
+        prefix: "",
+        componentDir: './components/ui',
     },
 
     compatibilityDate: "2024-11-20",
