@@ -42,7 +42,8 @@
         "../../node_modules/nuxt"
       ],
       "@/lib/utils": [
-        "./shadcn-nuxt/utils"
+        "./shadcn-nuxt/utils",
+        "./shadcn-nuxt/utils.ts"
       ],
       "~": [
         "../.."
