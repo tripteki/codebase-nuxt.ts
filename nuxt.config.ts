@@ -52,6 +52,7 @@ export default defineNuxtConfig ({
         "@pinia/nuxt",
         "@sidebase/nuxt-auth",
         "@nuxtjs/device",
+        "@nuxtjs/color-mode",
         "nuxt-toastify",
         "@nuxtjs/tailwindcss",
         "shadcn-nuxt",
@@ -191,11 +192,13 @@ export default defineNuxtConfig ({
 
     ... seo,
 
+    ogImage: {
+
+        enabled: false,
+    },
+
     ... (process.env.BUILD_STATIC ? {
         ssr: false,
-        ogImage: {
-            enabled: false,
-        },
         nitro: {
             preset: "static",
         },
@@ -220,6 +223,11 @@ export default defineNuxtConfig ({
         autoClose: 2000,
         theme: "auto",
         position: "top-center",
+    },
+
+    colorMode: {
+
+        classSuffix: "",
     },
 
     shadcn: {
@@ -331,5 +339,5 @@ export default defineNuxtConfig ({
         },
     },
 
-    compatibilityDate: "2024-11-20",
+    compatibilityDate: "2025-07-15",
 });

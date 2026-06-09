@@ -22,8 +22,9 @@ export const resolveFieldFromLoc = (loc?: Array<string | number>): string =>
     }
 
     const parts = loc.map (String);
+    const first = parts[0];
 
-    if (LOCATION_PREFIXES.has (parts[0]))
+    if (first && LOCATION_PREFIXES.has (first))
     {
         return parts.slice (1).join (".") || "general";
     }

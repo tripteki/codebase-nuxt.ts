@@ -11,6 +11,11 @@ const i18nConfig = {
 
     restructureDir: false,
 
+    bundle: {
+
+        optimizeTranslationDirective: false,
+    },
+
     strategy: "no_prefix",
 
     detectBrowserLanguage: {
