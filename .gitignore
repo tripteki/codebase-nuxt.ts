@@ -1,6 +1,5 @@
 # Nuxt.js
-/public/.nuxt/*
-!public/.nuxt/tsconfig.json
+/public/.nuxt
 /.nuxt
 /.output
 /.data

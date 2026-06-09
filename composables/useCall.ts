@@ -1,70 +1,19 @@
-"use strict";
+import { createCall, type CallDetail, type CallResult, } from "@/lib/call";
 
-import axios from "axios";
-
-export default async (detail: Object = {}): Promise<any> =>
+export function useCall (): {
+    call: (detail: CallDetail) => Promise<CallResult>;
+}
 {
-    const
+    const { token, data: sessionData, } = useAuth ();
+    const config = useRuntimeConfig ();
 
-    { token, getSession, } = useAuth (),
-    configuration = useRuntimeConfig (),
-    user = await getSession ();
-
-    const instance = axios.create (
-    {
-        baseURL: configuration.public.baseURL as string,
-
-        headers: {
-
-            ... (token.value ? { "Authorization": "Bearer " + token.value, } : {}),
-        },
-    });
-
-    instance.interceptors.request.use (
-
-        async request => request,
-        async error => Promise.reject (error)
+    const call = createCall (
+        () => token.value ?? (sessionData.value as any)?.jwt ?? (sessionData.value as any)?.accessToken ?? "",
+        () => String (config.public.baseURL)
     );
 
-    instance.interceptors.response.use (
+    return { call, };
+}
 
-        async response => response,
-        async error => Promise.reject (error)
-    );
-
-    var isLoading = false;
-    var isLoaded = false;
-    var isError = false;
-    var isSuccess = false;
-    var data = {};
-    var error = {};
-
-    await instance (detail)
-    .then (response =>
-    {
-        isLoading = true;
-        isSuccess = true;
-        data = response;
-    })
-    .catch (throwable =>
-    {
-        isLoading = true;
-        isError = true;
-        error = throwable;
-    })
-    .finally (() =>
-    {
-        isLoading = false;
-        isLoaded = true;
-    });
-
-    return {
-
-        isLoading,
-        isLoaded,
-        isError,
-        isSuccess,
-        data,
-        error,
-    };
-};
+export { createCall, };
+export type { CallDetail, CallResult, };

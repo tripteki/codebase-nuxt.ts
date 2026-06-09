@@ -4,26 +4,38 @@ enum SupportedLanguages {
 
     en = "en",
     id = "id",
+    ms = "ms",
 };
 
 const i18nConfig = {
 
-    detectBrowserLanguage: false,
+    restructureDir: false,
 
     strategy: "no_prefix",
 
-    langDir: "../lang",
+    detectBrowserLanguage: {
+        useCookie: true,
+        cookieKey: "i18n_redirected",
+        redirectOn: "root",
+        alwaysRedirect: false,
+    },
 
-    defaultLocale: process.env.NUXT_PUBLIC_APP_LANG as SupportedLanguages,
+    langDir: "lang",
+
+    defaultLocale: (process.env.NUXT_PUBLIC_APP_LANG || "en") as SupportedLanguages,
     locales: [
 
         {
             code: "en",
-            files: [ "en/_default.json", "en/common.json", ],
+            files: [ "en/auth.json", "en/common.json", ],
         },
         {
             code: "id",
-            files: [ "id/_default.json", "id/common.json", ],
+            files: [ "id/auth.json", "id/common.json", ],
+        },
+        {
+            code: "ms",
+            files: [ "ms/auth.json", "ms/common.json", ],
         },
     ],
 };
