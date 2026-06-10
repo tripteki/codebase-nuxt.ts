@@ -4,7 +4,7 @@ import { getLocaleFromEvent, getServerTranslation, } from "../../utils/i18n";
 export default defineEventHandler (async (event) =>
 {
     const body = await readBody (event);
-    const { email, signed, password, password_confirmation, } = body ?? {};
+    const { email, signed, token, password, password_confirmation, } = body ?? {};
     const locale = getLocaleFromEvent (event);
     const t = getServerTranslation (locale, "auth");
     const config = useRuntimeConfig ();
@@ -20,23 +20,42 @@ export default defineEventHandler (async (event) =>
         });
     }
 
-    const params: Record<string, string> = {};
+    let response;
 
-    if (signed)
+    if (token)
     {
-        params.signed = signed;
+        response = await callServer ({
+            baseUrl: config.public.authURL as string,
+            url: "/reset-password",
+            method: "POST",
+            data: {
+                token,
+                email,
+                password,
+                password_confirmation,
+            },
+        });
     }
+    else
+    {
+        const params: Record<string, string> = {};
 
-    const response = await callServer ({
-        baseUrl: config.public.authURL as string,
-        url: `/reset-password/${email}`,
-        method: "POST",
-        data: {
-            password,
-            password_confirmation,
-        },
-        params,
-    });
+        if (signed)
+        {
+            params.signed = signed;
+        }
+
+        response = await callServer ({
+            baseUrl: config.public.authURL as string,
+            url: `/reset-password/${email}`,
+            method: "POST",
+            data: {
+                password,
+                password_confirmation,
+            },
+            params,
+        });
+    }
 
     if (response.isError)
     {

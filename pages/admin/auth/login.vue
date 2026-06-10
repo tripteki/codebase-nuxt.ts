@@ -38,7 +38,7 @@ const props = withDefaults (defineProps<LoginProps> (), {
 const { t, } = useTranslation ("auth");
 const route = useRoute ();
 const { getSession, } = useAuth ();
-const { setToken, } = useAuthState ();
+const { setToken, rawRefreshToken, } = useAuthState ();
 
 useHead ({
     title: computed (() => t ("login")),
@@ -67,6 +67,7 @@ async function submit (event: Event): Promise<void>
     {
         const response = await $fetch<{
             accessToken: string;
+            refreshToken?: string;
             jwt: string;
             user: Record<string, unknown>;
         }> ("/api/auth/login", {
@@ -79,6 +80,12 @@ async function submit (event: Event): Promise<void>
         });
 
         setToken (response.accessToken);
+
+        if (response.refreshToken)
+        {
+            rawRefreshToken.value = response.refreshToken;
+        }
+
         await getSession ();
         await navigateTo ("/admin/dashboard");
     }

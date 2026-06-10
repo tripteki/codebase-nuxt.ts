@@ -172,7 +172,20 @@ export default defineNuxtConfig ({
 
             refresh: {
 
-                isEnabled: false,
+                isEnabled: true,
+
+                endpoint: {
+                    path: "refresh",
+                    method: "put",
+                },
+
+                refreshOnlyToken: false,
+
+                token: {
+                    signInResponseRefreshTokenPointer: "/refreshToken",
+                    refreshResponseTokenPointer: "/accessToken",
+                    refreshRequestTokenPointer: "/refreshToken",
+                },
             },
 
             pages: {
@@ -180,6 +193,12 @@ export default defineNuxtConfig ({
                 login: "/admin/auth/login",
             },
         },
+    },
+
+    sessionRefresh: {
+
+        enablePeriodically: 50 * 60 * 1000,
+        enableOnWindowFocus: true,
     },
 
     pinia: {

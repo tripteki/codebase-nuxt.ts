@@ -3,11 +3,9 @@ import { reactive, ref, computed, } from "vue";
 import {
     definePageMeta,
     navigateTo,
-    useCall,
     useHead,
     useTranslation,
     useRoute,
-    useRuntimeConfig,
 } from "#imports";
 
 import InputError from "@/components/InputError.vue";
@@ -24,10 +22,10 @@ definePageMeta ({
 const route = useRoute ();
 
 const email = computed (() => String (route.query.email ?? ""));
+const token = computed (() => route.query.token as string | undefined);
+const signed = computed (() => route.query.signed as string | undefined);
 
 const { t, } = useTranslation ("auth");
-const { call, } = useCall ();
-const config = useRuntimeConfig ();
 
 useHead ({
     title: computed (() => t ("reset_password")),
@@ -49,70 +47,48 @@ async function submit (event: Event): Promise<void>
 
     try
     {
-        const response = await call ({
-            baseUrl: String (config.public.authURL),
-            url: `/reset-password/${email.value}`,
-            method: "POST",
-            data: {
-                password: data.password,
-                password_confirmation: data.password_confirmation,
-            },
+        if (token.value)
+        {
+            await $fetch ("/api/auth/reset-password", {
+                method: "POST",
+                body: {
+                    token: token.value,
+                    email: email.value,
+                    password: data.password,
+                    password_confirmation: data.password_confirmation,
+                },
+            });
+        }
+        else
+        {
+            await $fetch ("/api/auth/reset-password", {
+                method: "POST",
+                body: {
+                    email: email.value,
+                    signed: signed.value,
+                    password: data.password,
+                    password_confirmation: data.password_confirmation,
+                },
+            });
+        }
+
+        await navigateTo ({
+            path: "/admin/auth/login",
+            query: { status: t ("password_reset"), },
         });
-
-        if (response.isError)
-        {
-            const axiosError = response.error as any;
-
-            if (axiosError?.response?.data)
-            {
-                if (axiosError.response.data.errors)
-                {
-                    errors.value = axiosError.response.data.errors;
-                }
-                else if (axiosError.response.data.message)
-                {
-                    errors.value = { password: axiosError.response.data.message, };
-                }
-                else if (typeof axiosError.response.data === "string")
-                {
-                    errors.value = { password: axiosError.response.data, };
-                }
-                else
-                {
-                    errors.value = { password: t ("something_went_wrong"), };
-                }
-            }
-            else
-            {
-                errors.value = { password: t ("something_went_wrong"), };
-            }
-        }
-        else if (response.isSuccess)
-        {
-            if (typeof response.data === "string")
-            {
-                errors.value = { password: response.data, };
-            }
-            else if (response.data?.errors)
-            {
-                errors.value = response.data.errors;
-            }
-            else if (response.data && typeof response.data === "object")
-            {
-                await navigateTo ({
-                    path: "/admin/auth/login",
-                    query: { status: t ("password_reset"), },
-                });
-            }
-            else
-            {
-                errors.value = { password: t ("something_went_wrong"), };
-            }
-        }
     }
-    catch
+    catch (throwable: unknown)
     {
-        errors.value = { password: t ("something_went_wrong"), };
+        const payload = (throwable as { data?: { errors?: Record<string, string> }; })?.data;
+
+        if (payload?.errors)
+        {
+            errors.value = payload.errors;
+        }
+        else
+        {
+            errors.value = { password: t ("something_went_wrong"), };
+        }
     }
     finally
     {
@@ -128,37 +104,35 @@ async function submit (event: Event): Promise<void>
     >
         <form @submit="submit">
         <div class="grid gap-6">
-            <div class="grid gap-2">
-                <Label html-for="email">{{ t("email") }}</Label>
+            <div>
+                <Label for="email">{{ t("email") }}</Label>
                 <Input
                     id="email"
                     type="email"
                     name="email"
                     autocomplete="email"
                     :model-value="email"
-                    class="mt-1 block w-full"
                     readonly
                 />
                 <InputError :message="errors.email" />
             </div>
 
-            <div class="grid gap-2">
-                <Label html-for="password">{{ t("password") }}</Label>
+            <div>
+                <Label for="password">{{ t("password") }}</Label>
                 <Input
                     id="password"
                     v-model="data.password"
                     type="password"
                     name="password"
                     autocomplete="new-password"
-                    class="mt-1 block w-full"
                     autofocus
                     :placeholder="t('password_placeholder')"
                 />
                 <InputError :message="errors.password" />
             </div>
 
-            <div class="grid gap-2">
-                <Label html-for="password_confirmation">
+            <div>
+                <Label for="password_confirmation">
                     {{ t("password_confirmation_label") }}
                 </Label>
                 <Input
@@ -167,7 +141,6 @@ async function submit (event: Event): Promise<void>
                     type="password"
                     name="password_confirmation"
                     autocomplete="new-password"
-                    class="mt-1 block w-full"
                     :placeholder="t('password_confirmation_placeholder')"
                 />
                 <InputError :message="errors.password_confirmation" />
@@ -175,17 +148,17 @@ async function submit (event: Event): Promise<void>
 
             <Button
                 type="submit"
-                class="mt-4 w-full"
+                class="mt-2 w-full gap-2"
                 :disabled="processing"
                 data-test="reset-password-button"
             >
                 <Spinner
                     v-if="processing"
-                    class="mx-5"
+                    class="h-4 w-4"
                 />
                 {{ processing ? t("resetting") : t("reset_password") }}
             </Button>
         </div>
-    </form>
+        </form>
     </AuthLayout>
 </template>

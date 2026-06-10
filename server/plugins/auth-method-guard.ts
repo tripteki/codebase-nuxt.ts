@@ -7,6 +7,7 @@ const postOnlyRoutes = new Set ([
     "/api/auth/forgot-password",
     "/api/auth/reset-password",
     "/api/auth/verify-email",
+    "/api/auth/verification-notification",
 ]);
 
 export default defineNitroPlugin ((nitroApp) =>

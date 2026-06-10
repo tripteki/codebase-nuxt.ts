@@ -11,7 +11,8 @@ defineProps<{
 
 const { t: tCommon, } = useTranslation ("common");
 const { t: tAuth, } = useTranslation ("auth");
-const { signOut, } = useAuth ();
+const { signOut, getSession, } = useAuth ();
+const { clearToken, } = useAuthState ();
 
 async function handleLogout (): Promise<void>
 {
@@ -25,6 +26,9 @@ async function handleLogout (): Promise<void>
     catch (error)
     {
         console.error ("Logout error:", error);
+        clearToken ();
+        await getSession ({ force: true, });
+        await navigateTo ("/admin/auth/login", { replace: true, });
     }
 }
 </script>

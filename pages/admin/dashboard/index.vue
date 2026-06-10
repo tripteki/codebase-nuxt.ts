@@ -3,6 +3,7 @@ import { computed, } from "vue";
 import { definePageMeta, useHead, useTranslation, } from "#imports";
 
 import FooterLayout from "@/components/FooterLayout.vue";
+import AuthVerifyEmailBanner from "@/components/AuthVerifyEmailBanner.vue";
 import HeaderLayout from "@/components/HeaderLayout.vue";
 import {
     Card,
@@ -17,6 +18,20 @@ definePageMeta ({
     middleware: "app-auth",
 });
 
+const { status, } = useAuth ();
+
+watch (
+    () => status.value,
+    (value) =>
+    {
+        if (value === "unauthenticated")
+        {
+            navigateTo ("/admin/auth/login", { replace: true, });
+        }
+    },
+    { immediate: true, },
+);
+
 const { t, } = useTranslation ("common");
 
 useHead ({
@@ -30,6 +45,8 @@ useHead ({
 
         <main class="flex-1 container mx-auto px-4 py-8">
             <div class="space-y-8">
+                <AuthVerifyEmailBanner />
+
                 <div class="space-y-2">
                     <h1 class="text-3xl font-bold tracking-tight">
                         {{ t("dashboard_title") }}

@@ -45,18 +45,23 @@ function normalizeUserOptions (userOptions: unknown): AuthPageMetaOptions | unde
 
 export default defineNuxtRouteMiddleware (async (to) =>
 {
-    const { status, getSession, } = useAuth ();
-
-    if (status.value === "loading")
-    {
-        await getSession ();
-    }
-
     const options = normalizeUserOptions (to.meta.auth);
 
     if (! options)
     {
         return;
+    }
+
+    const { status, getSession, } = useAuth ();
+    const isGuestMode = options.unauthenticatedOnly;
+
+    if (! isGuestMode)
+    {
+        await getSession ({ force: true, });
+    }
+    else if (status.value === "loading")
+    {
+        await getSession ();
     }
 
     const authConfig = useRuntimeConfig ().public.auth as {
@@ -68,7 +73,6 @@ export default defineNuxtRouteMiddleware (async (to) =>
             addDefaultCallbackUrl?: boolean | string;
         };
     };
-    const isGuestMode = options.unauthenticatedOnly;
     const isAuthenticated = status.value === "authenticated";
 
     if (isGuestMode && status.value === "unauthenticated")
@@ -120,5 +124,5 @@ export default defineNuxtRouteMiddleware (async (to) =>
         });
     }
 
-    return navigateTo (loginRoute);
+    return navigateTo (loginRoute, { replace: true, });
 });
