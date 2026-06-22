@@ -1,0 +1,93 @@
+---
+description: Vue 3 SFC, composable, Nitro, and realtime patterns
+globs: "**/*.{vue,ts}"
+alwaysApply: false
+---
+
+# Vue & Composables Patterns
+
+## Single File Components
+
+```vue
+<script setup lang="ts">
+// Prefer composables over inline logic
+import { useAuthGuard } from "@/composables/useAuthGuard";
+
+const { isAuthenticated } = useAuthGuard();
+</script>
+```
+
+- **Options API:** do not use for new code
+- Explicit `.vue` extension on imports: `import HeaderLayout from "@/components/HeaderLayout.vue"`
+- Colocate page-specific components; shared ones in `components/`
+
+## Key components
+
+| Component | Purpose |
+|-----------|---------|
+| `HeaderLayout.vue` | Main app header with actions |
+| `AuthLayout.vue` | Centered auth page wrapper |
+| `I18nSwitcher.vue` | Flag-based locale switcher |
+| `HeaderProfileLink.vue` | Avatar → profile link |
+| `ThemeToggle.vue` | Dark/light mode switch |
+| `AppLogo.vue` | Manifest PNG logo |
+
+## Composables
+
+| Composable | Purpose |
+|------------|---------|
+| `useAuthGuard.ts` | Client-side auth state + redirects |
+| `useNotifications.ts` | Fetch + display notifications |
+| `useSocket.ts` | Realtime connection (Echo or Socket.IO) |
+| `useAdminUsers.ts` | Admin user CRUD operations |
+
+- One composable per concern; return reactive refs and methods
+- Clean up subscriptions in `onUnmounted`
+
+## Nitro server routes
+
+File naming convention — HTTP verb suffix:
+
+```
+server/api/auth/login.post.ts
+server/api/auth/me.get.ts
+server/api/auth/refresh.put.ts
+server/api/auth/logout.post.ts
+```
+
+- These proxy to the backend API; keep them thin
+- Use `defineEventHandler` + `$fetch` pattern
+
+## Realtime
+
+```typescript
+const { connect, disconnect, on, off } = useSocket();
+
+// REALTIME_DRIVER=echo  → Laravel Echo
+// REALTIME_DRIVER=socketio → socket.io-client
+```
+
+- Listen for `v1.user.admin.*` events on private `user.{id}` channel
+- PWA splash screen links: `lib/pwa-splash-links.ts`
+
+## Pinia stores
+
+- Stores in `stores/` — one per domain (`useAuthStore`, etc.)
+- Use `storeToRefs` when destructuring reactive state in components
+- Do not duplicate data that `@sidebase/nuxt-auth` session already provides
+
+## Shared API types
+
+- Admin types in `types/admin/` — shared contract with Next.js sibling
+- Error shape: `{ detail: [...] }` (422) or `{ message }` (4xx/5xx)
+- Pagination: `{ data, meta, links }`
+
+## Common pitfalls (avoid)
+
+| Problem | Fix |
+|---------|-----|
+| SSR 401 auth loop | Keep `disableServerSideAuth: true` |
+| Dashboard after logout | Call `clearAuthCookies()` on logout |
+| Using `libs/` folder | Use `lib/` (singular) — project convention |
+| Manual Vue/Nuxt imports | Use auto-imports via `#imports` |
+| Options API for new features | Use `<script setup lang="ts">` + composables |

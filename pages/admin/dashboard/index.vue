@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, } from "vue";
-import { definePageMeta, useHead, useTranslation, } from "#imports";
+import { useHead, useTranslation, } from "#imports";
 
 import FooterLayout from "@/components/FooterLayout.vue";
 import AuthVerifyEmailBanner from "@/components/AuthVerifyEmailBanner.vue";
@@ -12,26 +12,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useRequireAuth, } from "@/composables/useAuthGuard";
+import { definePageAuthed, } from "@/lib/define-page-auth";
 
-definePageMeta ({
-    auth: true,
-    middleware: "app-auth",
-});
+definePageAuthed ();
 
-const { status, } = useAuth ();
-
-watch (
-    () => status.value,
-    (value) =>
-    {
-        if (value === "unauthenticated")
-        {
-            navigateTo ("/admin/auth/login", { replace: true, });
-        }
-    },
-    { immediate: true, },
-);
-
+const { canRender, } = useRequireAuth ();
 const { t, } = useTranslation ("common");
 
 useHead ({
@@ -40,7 +26,7 @@ useHead ({
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col bg-background">
+    <div v-if="canRender" class="min-h-screen flex flex-col bg-background">
         <HeaderLayout show-logout />
 
         <main class="flex-1 container mx-auto px-4 py-8">
@@ -49,52 +35,52 @@ useHead ({
 
                 <div class="space-y-2">
                     <h1 class="text-3xl font-bold tracking-tight">
-                        {{ t("dashboard_title") }}
+                        {{ t ("dashboard_title") }}
                     </h1>
                     <p class="text-muted-foreground">
-                        {{ t("dashboard_description") }}
+                        {{ t ("dashboard_description") }}
                     </p>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <Card>
                         <CardHeader>
-                            <CardTitle>{{ t("overview") }}</CardTitle>
+                            <CardTitle>{{ t ("overview") }}</CardTitle>
                             <CardDescription>
-                                {{ t("overview_description") }}
+                                {{ t ("overview_description") }}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <p class="text-sm text-muted-foreground">
-                                {{ t("overview_content") }}
+                                {{ t ("overview_content") }}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>{{ t("statistics") }}</CardTitle>
+                            <CardTitle>{{ t ("statistics") }}</CardTitle>
                             <CardDescription>
-                                {{ t("statistics_description") }}
+                                {{ t ("statistics_description") }}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <p class="text-sm text-muted-foreground">
-                                {{ t("statistics_content") }}
+                                {{ t ("statistics_content") }}
                             </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>{{ t("activity") }}</CardTitle>
+                            <CardTitle>{{ t ("activity") }}</CardTitle>
                             <CardDescription>
-                                {{ t("activity_description") }}
+                                {{ t ("activity_description") }}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <p class="text-sm text-muted-foreground">
-                                {{ t("activity_content") }}
+                                {{ t ("activity_content") }}
                             </p>
                         </CardContent>
                     </Card>

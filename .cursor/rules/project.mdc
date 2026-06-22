@@ -1,0 +1,134 @@
+---
+description: Core Nuxt 4 project conventions (auth, routing, env, build, tests)
+alwaysApply: true
+---
+
+# Nuxt — Project Conventions
+
+This is the **Nuxt 4** frontend in the Tripteki parallel-codebase family. It mirrors the Next.js app in features and API contract but uses Vue 3 + Pinia + `@sidebase/nuxt-auth`.
+
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Nuxt 4 + Vue 3 + TypeScript (`"type": "module"`) |
+| Server | Nitro (`server/api/` proxies) |
+| Auth | `@sidebase/nuxt-auth` — local provider, Bearer token + refresh |
+| State | Pinia (`stores/`) |
+| UI | Tailwind CSS 3 + shadcn-vue + radix-vue |
+| i18n | `@nuxtjs/i18n` 10 — locales `en`, `id`, `ms` |
+| SEO | `@nuxtjs/seo` |
+| PWA | `@vite-pwa/nuxt` — injectManifest mode (`service/sw.ts`) |
+| Charts | ApexCharts + Chart.js |
+| Toast | `vue3-toastify` via `@nuxtjs/toastify` |
+| Realtime | Echo/Reverb or Socket.IO (same driver switch as Next) |
+
+## Directory layout
+
+```
+pages/                  # File-based routes (*.vue)
+components/             # Vue SFCs (PascalCase)
+  ui/                   # shadcn-vue primitives
+composables/            # useX.ts composables
+lib/                    # Shared utilities (singular — NOT libs/)
+stores/                 # Pinia stores
+layouts/                # Layout SFCs
+middleware/             # Route middleware (app-auth.ts)
+plugins/                # Nuxt plugins (auth-refresh.server.ts)
+server/api/             # Nitro API routes (auth, webpush proxies)
+lang/                   # i18n translation files
+assets/css/             # Global styles (main.css)
+service/                # PWA service worker source
+tests/lib/              # Vitest unit tests
+tests/e2e/              # Playwright e2e tests
+nuxt.config.ts          # Central config (runtimeConfig, modules, routeRules)
+```
+
+## Authentication & route protection
+
+### Critical: disable server-side auth refresh
+```typescript
+// nuxt.config.ts
+auth: {
+  disableServerSideAuth: true,  // REQUIRED — prevents SSR 401 refresh loop
+}
+```
+
+### Token refresh flow
+1. Client-side `sessionRefresh` handles token rotation
+2. `plugins/auth-refresh.server.ts` — minimal server-side cookie check only
+3. Do **not** re-enable full SSR auth refresh without fixing the 401 loop
+
+### Page-level auth declarations
+```typescript
+// Guest-only pages (login, register, forgot-password)
+import { definePageGuest } from "@/lib/define-page-auth";
+definePageGuest();
+
+// Authenticated pages (dashboard, profile)
+import { definePageAuthed } from "@/lib/define-page-auth";
+definePageAuthed();
+```
+
+### Middleware
+- `middleware/app-auth.ts` — server-side cookie presence check before page render
+- Works together with `definePageGuest` / `definePageAuthed` metadata
+
+### Logout
+```typescript
+import { clearAuthCookies } from "@/lib/auth-cookies";
+clearAuthCookies();  // Must run before/at signOut
+await signOut({ callbackUrl: "/admin/auth/login" });
+```
+
+## Environment variables
+
+| Variable | Scope | Purpose |
+|----------|-------|---------|
+| `NUXT_PUBLIC_APP_URL` | Public | Frontend origin |
+| `NUXT_PUBLIC_API_URL` | Public | Backend REST base |
+| `NUXT_PUBLIC_REALTIME_DRIVER` | Public | `echo` or `socketio` |
+| `NUXT_PUBLIC_REVERB_*` | Public | Echo/Reverb config |
+| `NUXT_PUBLIC_VAPID_PUBLIC_KEY` | Public | Web Push |
+| `SECRET` | Server | App secret |
+| `PORT` | Server | Dev server port |
+
+- Mapped in `nuxt.config.ts` → `runtimeConfig` / `runtimeConfig.public`
+- Auth base URL: `{NUXT_PUBLIC_APP_URL}/api/auth`
+- `.env.example` uses `api.backend.localhost`; local `.env` may use `localhost:8000`
+
+## Route rules & aliases
+
+Configured in `nuxt.config.ts` `routeRules`:
+- `/auth/login` → redirects to `/admin/auth/login`
+- Similar aliases for register, forgot-password, etc.
+
+## Static export
+
+```bash
+BUILD_STATIC=true npm run generate  # ssr: false, Nitro preset: "static" → .output/public/
+```
+
+## Testing
+
+```bash
+npm test              # Vitest (tests/lib/)
+npm run test:e2e      # Playwright (NUXT_PUBLIC_APP_URL)
+npm run postinstall   # nuxt prepare (runs automatically)
+```
+
+## Code style
+
+- **SFCs:** PascalCase (`ThemeToggle.vue`, `HeaderLayout.vue`)
+- **Composables:** camelCase `useX.ts` (`useAuthGuard.ts`, `useNotifications.ts`)
+- **Script:** always `<script setup lang="ts">`
+- **Auto-imports:** use `#imports` for Nuxt composables; do not manually import `ref`, `computed`, etc.
+- **Formatting:** match Next.js sibling — Allman braces, spaces inside parentheses
+- **shadcn-vue:** add via `npm run component`
+
+## UI conventions
+
+- **Header action order:** i18n switcher → theme toggle → notifications → avatar/profile → logout
+- **i18n switcher:** flag emojis (🇺🇸 🇮🇩 🇲🇾), positioned far left in header actions
+- **Buttons:** `gap-2` for loading spinner spacing
+- **Alerts:** consistent spacing with Next.js sibling components

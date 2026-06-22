@@ -9,18 +9,16 @@ const props = defineProps<{
     htmlFor?: string;
 }>();
 
-const classes = computed (() => cn (
-    "text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-    props.class
-));
+const classes = computed (() =>
+    cn (
+        "text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        props.class
+    )
+);
 </script>
 
 <template>
-    <Label
-        data-slot="label"
-        :class="classes"
-        :for="htmlFor"
-    >
+    <Label data-slot="label" :class="classes" :for="htmlFor">
         <slot />
     </Label>
 </template>

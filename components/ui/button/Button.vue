@@ -8,21 +8,29 @@ import { cn, } from "@/lib/utils";
 
 type ButtonVariants = VariantProps<typeof buttonVariants>;
 
-const props = withDefaults (defineProps<{
-    class?: HTMLAttributes["class"];
-    variant?: ButtonVariants["variant"];
-    size?: ButtonVariants["size"];
-    type?: "button" | "submit" | "reset";
-    disabled?: boolean;
-    asChild?: boolean;
-}> (), {
-    type: "button",
-    variant: "default",
-    size: "default",
-    asChild: false,
-});
+const props = withDefaults (
+    defineProps<{
+        class?: HTMLAttributes["class"];
+        variant?: ButtonVariants["variant"];
+        size?: ButtonVariants["size"];
+        type?: "button" | "submit" | "reset";
+        disabled?: boolean;
+        asChild?: boolean;
+    }>(),
+    {
+        type: "button",
+        variant: "default",
+        size: "default",
+        asChild: false,
+    }
+);
 
-const classes = computed (() => cn (buttonVariants ({ variant: props.variant, size: props.size, }), props.class));
+const classes = computed (() =>
+    cn (
+        buttonVariants ({ variant: props.variant, size: props.size }),
+        props.class
+    )
+);
 </script>
 
 <template>
@@ -32,7 +40,7 @@ const classes = computed (() => cn (buttonVariants ({ variant: props.variant, si
         :type="asChild ? undefined : type"
         :disabled="disabled"
         :class="classes"
-    >
+        v-bind="$attrs">
         <slot />
     </Primitive>
 </template>

@@ -104,6 +104,13 @@ export default {
                     foreground: "var(--accent-foreground)",
                 },
 
+                success: {
+
+                    DEFAULT: "var(--success)",
+                    foreground: "var(--success-foreground)",
+                    muted: "var(--success-muted)",
+                },
+
                 popover: {
 
                     DEFAULT: "var(--popover)",
@@ -114,6 +121,13 @@ export default {
 
                     DEFAULT: "var(--card)",
                     foreground: "var(--card-foreground)",
+                },
+
+                brand: {
+
+                    primary: "var(--brand-primary)",
+                    secondary: "var(--brand-secondary)",
+                    tertiary: "var(--brand-tertiary)",
                 },
 
                 chart: {

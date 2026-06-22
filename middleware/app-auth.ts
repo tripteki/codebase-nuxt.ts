@@ -1,3 +1,6 @@
+import { hasValidAuthSession, validateAuthSession, } from "@/lib/auth-session";
+import { readAuthTokenCookie, } from "@/lib/auth-cookies";
+
 type AuthPageMetaOptions = {
     unauthenticatedOnly: boolean;
     navigateAuthenticatedTo: string;
@@ -41,6 +44,20 @@ function normalizeUserOptions (userOptions: unknown): AuthPageMetaOptions | unde
     }
 
     return undefined;
+};
+
+function resolveRedirectTarget (redirect: unknown, fallback: string): string
+{
+    if (
+        typeof redirect === "string"
+        && redirect.startsWith ("/")
+        && ! redirect.startsWith ("//")
+    )
+    {
+        return redirect;
+    }
+
+    return fallback;
 }
 
 export default defineNuxtRouteMiddleware (async (to) =>
@@ -52,18 +69,6 @@ export default defineNuxtRouteMiddleware (async (to) =>
         return;
     }
 
-    const { status, getSession, } = useAuth ();
-    const isGuestMode = options.unauthenticatedOnly;
-
-    if (! isGuestMode)
-    {
-        await getSession ({ force: true, });
-    }
-    else if (status.value === "loading")
-    {
-        await getSession ();
-    }
-
     const authConfig = useRuntimeConfig ().public.auth as {
         provider: {
             pages: { login: string; };
@@ -73,24 +78,67 @@ export default defineNuxtRouteMiddleware (async (to) =>
             addDefaultCallbackUrl?: boolean | string;
         };
     };
-    const isAuthenticated = status.value === "authenticated";
 
-    if (isGuestMode && status.value === "unauthenticated")
+    const loginRoute = authConfig.provider.pages.login;
+
+    if (import.meta.server)
     {
+        const hasTokenCookie = Boolean (readAuthTokenCookie ()?.trim ());
+
+        if (options.unauthenticatedOnly)
+        {
+            if (! hasTokenCookie)
+            {
+                return;
+            }
+
+            return navigateTo (
+                resolveRedirectTarget (to.query.redirect, options.navigateAuthenticatedTo),
+                { replace: true, }
+            );
+        }
+
+        if (! hasTokenCookie)
+        {
+            if (options.navigateUnauthenticatedTo)
+            {
+                return navigateTo (options.navigateUnauthenticatedTo, { replace: true, });
+            }
+
+            return navigateTo ({
+                path: loginRoute,
+                query: { redirect: to.fullPath, },
+            }, { replace: true, });
+        }
+
         return;
     }
 
-    if (isGuestMode && isAuthenticated)
+    const auth = useAuth ();
+
+    let isAuthenticated = hasValidAuthSession (auth);
+
+    if (! isAuthenticated) {
+        isAuthenticated = await validateAuthSession (auth);
+    }
+
+    if (options.unauthenticatedOnly)
     {
-        return navigateTo (options.navigateAuthenticatedTo);
+        if (! isAuthenticated)
+        {
+            return;
+        }
+
+        return navigateTo (
+            resolveRedirectTarget (to.query.redirect, options.navigateAuthenticatedTo),
+            { replace: true, }
+        );
     }
 
     if (isAuthenticated)
     {
         return;
     }
-
-    const loginRoute = authConfig.provider.pages.login;
 
     if (loginRoute && loginRoute === to.path)
     {
@@ -109,7 +157,7 @@ export default defineNuxtRouteMiddleware (async (to) =>
 
     if (options.navigateUnauthenticatedTo)
     {
-        return navigateTo (options.navigateUnauthenticatedTo);
+        return navigateTo (options.navigateUnauthenticatedTo, { replace: true, });
     }
 
     if (typeof globalAppMiddleware === "object" && globalAppMiddleware.addDefaultCallbackUrl)
@@ -121,8 +169,11 @@ export default defineNuxtRouteMiddleware (async (to) =>
         return navigateTo ({
             path: loginRoute,
             query: { redirect: redirectUrl, },
-        });
+        }, { replace: true, });
     }
 
-    return navigateTo (loginRoute, { replace: true, });
+    return navigateTo ({
+        path: loginRoute,
+        query: { redirect: to.fullPath, },
+    }, { replace: true, });
 });

@@ -1,4 +1,5 @@
-import { parseApiErrors, } from "../../../lib/parse-api-errors";
+import { parseApiErrors, focusPasswordMatchError, } from "../../../lib/parse-api-errors";
+import { validatePasswordConfirmation, } from "../../../lib/auth-response";
 import { callServer, } from "../../utils/call-server";
 import { getLocaleFromEvent, getServerTranslation, } from "../../utils/i18n";
 
@@ -9,6 +10,23 @@ export default defineEventHandler (async (event) =>
     const locale = getLocaleFromEvent (event);
     const t = getServerTranslation (locale, "auth");
     const config = useRuntimeConfig ();
+
+    const passwordMismatch = validatePasswordConfirmation (
+        password,
+        password_confirmation,
+        t ("password_mismatch")
+    );
+
+    if (passwordMismatch)
+    {
+        throw createError ({
+            statusCode: 422,
+            data: {
+                success: false,
+                errors: focusPasswordMatchError (passwordMismatch, "password_confirmation"),
+            },
+        });
+    }
 
     const response = await callServer ({
         baseUrl: config.public.authURL as string,

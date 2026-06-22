@@ -1,3 +1,4 @@
+import { parseApiErrors, } from "../../../lib/parse-api-errors";
 import { callServer, } from "../../utils/call-server";
 import { getLocaleFromEvent, getServerTranslation, } from "../../utils/i18n";
 
@@ -23,24 +24,10 @@ export default defineEventHandler (async (event) =>
         if (axiosError?.response)
         {
             const status = axiosError.response.status || 500;
-            let errors: Record<string, string> = {};
-
-            if (axiosError.response.data?.errors)
-            {
-                errors = axiosError.response.data.errors;
-            }
-            else if (axiosError.response.data?.message)
-            {
-                errors.general = axiosError.response.data.message;
-            }
-            else if (typeof axiosError.response.data === "string")
-            {
-                errors.general = axiosError.response.data;
-            }
-            else
-            {
-                errors.general = t ("failed_to_send_reset_link");
-            }
+            const errors = parseApiErrors (
+                axiosError.response.data,
+                t ("failed_to_send_reset_link")
+            );
 
             throw createError ({
                 statusCode: status,
@@ -59,13 +46,10 @@ export default defineEventHandler (async (event) =>
 
     if (typeof response.data === "string")
     {
-        throw createError ({
-            statusCode: 422,
-            data: {
-                success: false,
-                errors: { general: response.data, },
-            },
-        });
+        return {
+            success: true,
+            message: response.data || t ("password_reset_link_sent"),
+        };
     }
 
     if (response.data?.errors)

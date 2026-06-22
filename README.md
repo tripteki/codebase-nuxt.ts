@@ -1,6 +1,6 @@
 <h1 align="center">Codebase Nuxt</h1>
 
-Web frontend built with **Nuxt 4**, **Vue 3**, **@nuxtjs/i18n 10**, **@sidebase/nuxt-auth**, **Tailwind CSS 3**, and **PWA** support. Mirrors the Next.js reference implementation (`frontend/`).
+Web frontend built with **Nuxt 4**, **Vue 3**, **@nuxtjs/i18n 10**, **@sidebase/nuxt-auth**, **Tailwind CSS 3**, and **PWA** support. Consumes a backend-agnostic HTTP API via `NUXT_PUBLIC_*_URL` environment variables.
 
 ### Features
 
@@ -8,14 +8,17 @@ Web frontend built with **Nuxt 4**, **Vue 3**, **@nuxtjs/i18n 10**, **@sidebase/
 |----|---------|-------------|------------|
 | 1 | SSR + static | Server build or static generate | Nuxt 4 + Nitro |
 | 2 | Authentication | Login, register, forgot/reset password, verify email | @sidebase/nuxt-auth (local provider) |
-| 3 | API proxy | Auth proxied to Laravel via Nitro routes | `server/api/auth/*` |
+| 3 | API proxy | Auth proxied to backend via Nitro routes | `server/api/auth/*` |
 | 4 | I18N | English, Indonesian, Malay (cookie-based, no URL prefix) | @nuxtjs/i18n 10 |
 | 5 | UI | Auth layout, dashboard, theme toggle | Tailwind + shadcn-vue |
-| 6 | State | Pinia stores | @pinia/nuxt |
-| 7 | Real-time (optional) | Laravel Echo + Reverb | laravel-echo + pusher-js |
-| 8 | PWA | Workbox service worker, manifest, icons | @vite-pwa/nuxt |
-| 9 | SEO | Site config, sitemap module | @nuxtjs/seo 5 |
-| 10 | Charts | Dashboard chart widgets | ApexCharts + Chart.js |
+| 6 | User & profile | `/users/me`, interests, password update | `useUserProfile` → REST API |
+| 7 | Notifications | List, read, delete, unread badge | `useNotifications` → `/api/v1/notifications/*` |
+| 8 | Real-time | Notifications + optional admin events | `useNotificationBroadcast` + Echo/Reverb or Socket.IO |
+| 9 | Web Push | VAPID subscribe via Nitro proxy | `plugins/web-push.client.ts` |
+| 10 | State | Pinia stores | @pinia/nuxt |
+| 11 | PWA | Workbox service worker, manifest, icons | @vite-pwa/nuxt |
+| 12 | SEO | Site config, sitemap module | @nuxtjs/seo 5 |
+| 13 | Charts | Dashboard chart widgets | ApexCharts + Chart.js |
 
 Getting Started
 ---
@@ -51,6 +54,8 @@ NUXT_PUBLIC_REVERB_APP_KEY=codebase-key
 NUXT_PUBLIC_REVERB_HOST=127.0.0.1
 NUXT_PUBLIC_REVERB_PORT=8080
 NUXT_PUBLIC_REVERB_SCHEME=http
+NUXT_PUBLIC_REALTIME_DRIVER=echo
+NUXT_PUBLIC_VAPID_PUBLIC_KEY=
 NUXT_PUBLIC_APP_ENV=production
 NUXT_PUBLIC_APP_LANG=en
 PORT=3000
@@ -59,10 +64,13 @@ SECRET=123456
 
 | Variable | Description |
 |----------|-------------|
+| `NUXT_PUBLIC_API_URL` | Backend API root URL (Swagger: `{API_URL}/api/docs`) |
+| `NUXT_PUBLIC_REALTIME_DRIVER` | `echo` (Reverb, default) or `socketio` (Socket.IO API) |
+| `NUXT_PUBLIC_REVERB_*` | Required when `REALTIME_DRIVER=echo` |
 | `NUXT_PUBLIC_*` | Public runtime config (`runtimeConfig.public`) |
 | `SECRET` | Server-only secret |
 
-Ensure the Laravel backend is running and allows this app origin.
+Ensure the API backend is running and allows this app origin.
 
 ### Running the Application
 
@@ -93,7 +101,7 @@ npm run preview
 npm run generate
 ```
 
-Output: `.output/public/` (SPA mode when `BUILD_STATIC=true` — same as Next static export pattern).
+Output: `.output/public/` (SPA mode when `BUILD_STATIC=true` - same as Next static export pattern).
 
 #### Lint
 
@@ -120,7 +128,7 @@ npm run component
 | `/auth/reset-password/[email]` | guest + signed | Reset via signed URL |
 | `/auth/verify-email/[email]` | guest + signed | Email verification |
 
-Route aliases (redirects): `/auth/login` → `/admin/auth/login`, etc. — configured in `nuxt.config.ts`.
+Route aliases (redirects): `/auth/login` → `/admin/auth/login`, etc. - configured in `nuxt.config.ts`.
 
 ### Authentication
 
@@ -130,12 +138,12 @@ Route aliases (redirects): `/auth/login` → `/admin/auth/login`, etc. — confi
 - Session data: `/user` pointer
 - Login page: `/admin/auth/login`
 
-Auth base URL: `{NUXT_PUBLIC_APP_URL}/api/auth` (Nitro proxy → Laravel).
+Auth base URL: `{NUXT_PUBLIC_APP_URL}/api/auth` (Nitro proxy → backend API).
 
 ### Internationalization
 
 - Locales: `en`, `id`, `ms`
-- Strategy: **`no_prefix`** — locale in cookie `i18n_redirected`
+- Strategy: **`no_prefix`** - locale in cookie `i18n_redirected`
 - Translation files: `lang/{locale}/{auth,common}.json`
 - Composable: `useLocale()`, `useTranslation()`
 - Config: `nuxt-i18n.config.ts`
@@ -157,15 +165,110 @@ Re-sync from backend:
 bash ../scripts/sync-pwa-assets.sh
 ```
 
-Source: `backend/public/favicon.ico`, `backend/public/asset/logo.png`
+Source: API server `public/favicon.ico` and `public/asset/logo.png`
 
 Splash `<link>` tags: `lib/pwa-splash-links.ts` → injected in `nuxt.config.ts` `app.head.link`.
 
-### Real-time (Laravel Echo)
+### Real-time
 
-Use the same Echo setup as the Next app. Configure `NUXT_PUBLIC_REVERB_*` and call Laravel `/broadcasting/auth` with the access token.
+The app supports two realtime drivers via `NUXT_PUBLIC_REALTIME_DRIVER`:
 
-See `backend/README.md` for Reverb setup and event names.
+| Driver | API | Transport |
+|--------|-----|-----------|
+| `echo` (default) | Reverb broadcast | Laravel Echo + Reverb (Pusher protocol) |
+| `socketio` | Socket.IO | `socket.io-client` |
+
+Values are read from `nuxt.config.ts` → `runtimeConfig.public` and `lib/realtime-config.ts`. Use `.env` for local overrides (for example `localhost:8000`); `.env.example` shows the default template URLs.
+
+#### Echo driver (`echo`)
+
+```env
+NUXT_PUBLIC_REALTIME_DRIVER=echo
+NUXT_PUBLIC_REVERB_APP_KEY=codebase-key
+NUXT_PUBLIC_REVERB_HOST=127.0.0.1
+NUXT_PUBLIC_REVERB_PORT=8080
+NUXT_PUBLIC_REVERB_SCHEME=http
+```
+
+Requires API with `BROADCAST_CONNECTION=reverb`, a running Reverb server, and `POST /broadcasting/auth`.
+
+#### Socket.IO driver (`socketio`)
+
+```env
+NUXT_PUBLIC_REALTIME_DRIVER=socketio
+NUXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+- WebSocket auth uses the **access token** (Bearer).
+- **Email must be verified** — the API rejects Socket.IO connections when `email_verified_at` is empty.
+- Multi-worker APIs may use Redis as a Socket.IO message queue; configure `MEMORY_REDIS_*` for production.
+
+#### Client API
+
+Bootstrap via `useSocket()` or `createRealtimeClient()` (`lib/realtime-client.ts`):
+
+```typescript
+import { useSocket, } from "@/composables/useSocket";
+
+const { data: client, isSuccess, } = await useSocket();
+
+if (isSuccess && client)
+{
+    client.subscribeUserEvent (userId, "v1.notification.created", (payload) =>
+    {
+        // { id, unread }
+    });
+}
+```
+
+Notifications are wired automatically in `useNotificationBroadcast` (used by `NotificationShellExtras.vue`).
+
+#### Admin import / export events
+
+Subscribe with the same pattern when you need live progress on admin pages:
+
+```typescript
+client.subscribeUserEvent (userId, "v1.user.admin.imported", (payload) =>
+{
+    // { userId, filename, totalImported, totalSkipped }
+});
+
+client.subscribeUserEvent (userId, "v1.user.admin.imported-failed", (payload) =>
+{
+    // { userId, filename, error }
+});
+
+client.subscribeUserEvent (userId, "v1.user.admin.exported", (payload) =>
+{
+    // { userId, filename, fileUrl, filePath }
+});
+
+client.subscribeUserEvent (userId, "v1.user.admin.exported-failed", (payload) =>
+{
+    // { userId, error }
+});
+
+client.subscribeUserEvent (userId, "v1.user.admin.activated", (payload) => { /* ... */ });
+client.subscribeUserEvent (userId, "v1.user.admin.deactivated", (payload) => { /* ... */ });
+```
+
+Call `client.unsubscribe()` or `client.disconnect()` when leaving the page.
+
+#### Broadcast events (all backends)
+
+| Event | Payload (summary) |
+|-------|-------------------|
+| `v1.notification.created` | `id`, `unread` |
+| `v1.user.admin.imported` | `userId`, `filename`, `totalImported`, `totalSkipped` |
+| `v1.user.admin.imported-failed` | `userId`, `filename`, `error` |
+| `v1.user.admin.exported` | `userId`, `filename`, `fileUrl`, `filePath` |
+| `v1.user.admin.exported-failed` | `userId`, `error` |
+| `v1.user.admin.activated` | user fields (`id`, `name`, `email`, …) |
+| `v1.user.admin.deactivated` | user fields (`id`, `name`, `email`, …) |
+
+With `echo`, events use a leading dot when listening on a private channel (handled inside `subscribeUserEvent`). With `socketio`, event names are used as-is.
+
+Low-level Echo helper (`echo` driver): `lib/echo.ts` → `createEcho(accessToken)`.
 
 ### Modules
 
@@ -195,7 +298,8 @@ codebase-nuxt.ts/
 │   ├── ui/                        # shadcn-vue components
 │   ├── I18nSwitcher.vue
 │   └── ThemeToggle.vue
-├── composables/                   # useLocale, useTheme, useCall
+├── composables/                   # useSocket, useNotificationBroadcast, useCall
+├── lib/                           # echo, realtime-client, api-base
 ├── lang/                          # en, id, ms JSON
 ├── layouts/
 ├── server/

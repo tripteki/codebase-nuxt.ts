@@ -13,9 +13,8 @@ const { theme, toggleTheme, mounted, } = useTheme ();
         variant="ghost"
         size="icon"
         type="button"
-        :aria-label="t('toggle_theme')"
-        @click="toggleTheme"
-    >
+        :aria-label="t ('toggle_theme')"
+        @click="toggleTheme">
         <svg
             v-if="mounted && theme === 'dark'"
             xmlns="http://www.w3.org/2000/svg"
@@ -25,8 +24,7 @@ const { theme, toggleTheme, mounted, } = useTheme ();
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="h-5 w-5"
-        >
+            class="h-5 w-5">
             <circle cx="12" cy="12" r="4" />
             <path d="M12 2v2" />
             <path d="M12 20v2" />
@@ -46,8 +44,7 @@ const { theme, toggleTheme, mounted, } = useTheme ();
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="h-5 w-5"
-        >
+            class="h-5 w-5">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         </svg>
     </Button>

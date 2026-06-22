@@ -5,4 +5,6 @@ export const VERIFY_EMAIL_REDIRECT_ERRORS: readonly string[] = [
 ];
 
 export const shouldRedirectVerifyEmailError = (message: string): boolean =>
-    VERIFY_EMAIL_REDIRECT_ERRORS.some ((pattern: string) => message.includes (pattern));
+    VERIFY_EMAIL_REDIRECT_ERRORS.some ((pattern: string) =>
+        message.includes (pattern)
+    );

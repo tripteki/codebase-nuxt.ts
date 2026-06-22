@@ -1,3 +1,6 @@
+import { parseApiErrors, focusPasswordMatchError, } from "../../../lib/parse-api-errors";
+import { buildResetPasswordRequest, } from "../../../lib/auth-reset-password-request";
+import { validatePasswordConfirmation, } from "../../../lib/auth-response";
 import { callServer, } from "../../utils/call-server";
 import { getLocaleFromEvent, getServerTranslation, } from "../../utils/i18n";
 
@@ -20,42 +23,38 @@ export default defineEventHandler (async (event) =>
         });
     }
 
-    let response;
+    const passwordMismatch = validatePasswordConfirmation (
+        password,
+        password_confirmation,
+        t ("password_mismatch")
+    );
 
-    if (token)
+    if (passwordMismatch)
     {
-        response = await callServer ({
-            baseUrl: config.public.authURL as string,
-            url: "/reset-password",
-            method: "POST",
+        throw createError ({
+            statusCode: 422,
             data: {
-                token,
-                email,
-                password,
-                password_confirmation,
+                success: false,
+                errors: focusPasswordMatchError (passwordMismatch, "password"),
             },
         });
     }
-    else
-    {
-        const params: Record<string, string> = {};
 
-        if (signed)
-        {
-            params.signed = signed;
-        }
+    const resetRequest = buildResetPasswordRequest ({
+        email: String (email),
+        token: token ? String (token) : undefined,
+        signed: signed ? String (signed) : undefined,
+        password: String (password ?? ""),
+        password_confirmation: String (password_confirmation ?? ""),
+    });
 
-        response = await callServer ({
-            baseUrl: config.public.authURL as string,
-            url: `/reset-password/${email}`,
-            method: "POST",
-            data: {
-                password,
-                password_confirmation,
-            },
-            params,
-        });
-    }
+    const response = await callServer ({
+        baseUrl: config.public.authURL as string,
+        url: resetRequest.url,
+        method: "POST",
+        data: resetRequest.data,
+        ... (resetRequest.params ? { params: resetRequest.params, } : {}),
+    });
 
     if (response.isError)
     {
@@ -64,24 +63,10 @@ export default defineEventHandler (async (event) =>
         if (axiosError?.response)
         {
             const status = axiosError.response.status || 500;
-            let errors: Record<string, string> = {};
-
-            if (axiosError.response.data?.errors)
-            {
-                errors = axiosError.response.data.errors;
-            }
-            else if (axiosError.response.data?.message)
-            {
-                errors.general = axiosError.response.data.message;
-            }
-            else if (typeof axiosError.response.data === "string")
-            {
-                errors.general = axiosError.response.data;
-            }
-            else
-            {
-                errors.general = t ("failed_to_reset_password");
-            }
+            const errors = parseApiErrors (
+                axiosError.response.data,
+                t ("failed_to_reset_password")
+            );
 
             throw createError ({
                 statusCode: status,

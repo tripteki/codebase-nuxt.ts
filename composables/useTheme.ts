@@ -5,33 +5,29 @@ export function useTheme (): {
     setTheme: (theme: string) => void;
     toggleTheme: () => void;
     mounted: Ref<boolean>;
-}
-{
-    const theme = ref<string> ("light");
-    const mounted = ref<boolean> (false);
+} {
+    const theme = ref<string>("light");
+    const mounted = ref<boolean>(false);
 
-    onMounted ((): void =>
-    {
+    onMounted ((): void => {
         mounted.value = true;
 
         const storedTheme = localStorage.getItem ("theme");
 
-        if (storedTheme)
-        {
+        if (storedTheme) {
             theme.value = storedTheme;
-        }
-        else
-        {
-            theme.value = window.matchMedia ("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        } else {
+            theme.value = window.matchMedia ("(prefers-color-scheme: dark)")
+                .matches
+                ? "dark"
+                : "light";
         }
 
         applyTheme (theme.value);
     });
 
-    watch (theme, (value: string): void =>
-    {
-        if (! mounted.value)
-        {
+    watch (theme, (value: string): void => {
+        if (! mounted.value) {
             return;
         }
 
@@ -39,29 +35,23 @@ export function useTheme (): {
         localStorage.setItem ("theme", value);
     });
 
-    function applyTheme (value: string): void
-    {
+    function applyTheme (value: string): void {
         const root = document.documentElement;
 
         root.classList.remove ("light", "dark");
 
-        if (value === "dark")
-        {
+        if (value === "dark") {
             root.classList.add ("dark");
-        }
-        else
-        {
+        } else {
             root.classList.add ("light");
         }
     }
 
-    function setTheme (newTheme: string): void
-    {
+    function setTheme (newTheme: string): void {
         theme.value = newTheme;
     }
 
-    function toggleTheme (): void
-    {
+    function toggleTheme (): void {
         theme.value = theme.value === "dark" ? "light" : "dark";
     }
 

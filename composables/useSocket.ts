@@ -1,52 +1,40 @@
-import Echo from "laravel-echo";
-
-import { createEcho, } from "@/lib/echo";
-
-type Detail =
-{
-    apiUrl?: string;
-    reverbAppKey?: string;
-    reverbHost?: string;
-    reverbPort?: number;
-    reverbScheme?: string;
-};
+import {
+    createRealtimeClient,
+    type RealtimeClient,
+} from "@/lib/realtime-client";
+import type { RealtimeConnectionConfig } from "@/lib/realtime-config";
 
 export const useSocket = async (
-    detail?: Detail
+    detail?: Partial<RealtimeConnectionConfig>
 ): Promise<{
     isLoading: boolean;
     isLoaded: boolean;
     isError: boolean;
     isSuccess: boolean;
-    data: Echo<any> | null;
+    data: RealtimeClient | null;
     error: any;
-}> =>
-{
+}> => {
     let isLoading: boolean = true;
     let isLoaded: boolean = false;
     let isError: boolean = false;
     let isSuccess: boolean = false;
-    let data: Echo<any> | null = null;
+    let data: RealtimeClient | null = null;
     let error: any = null;
 
-    try
-    {
+    try {
         const { token, data: sessionData, } = useAuth ();
-        const accessToken: string = token.value
-            ?? (sessionData.value as any)?.accessToken
-            ?? (sessionData.value as any)?.jwt
-            ?? "";
+        const accessToken: string =
+            token.value ??
+            (sessionData.value as any)?.accessToken ??
+            (sessionData.value as any)?.jwt ??
+            "";
 
-        data = createEcho (accessToken, detail);
+        data = createRealtimeClient (accessToken, detail);
         isSuccess = true;
-    }
-    catch (thrower: any)
-    {
+    } catch (thrower: any) {
         error = thrower;
         isError = true;
-    }
-    finally
-    {
+    } finally {
         isLoading = false;
         isLoaded = true;
     }

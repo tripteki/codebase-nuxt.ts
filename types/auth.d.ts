@@ -1,5 +1,6 @@
 declare module "@sidebase/nuxt-auth/dist/runtime/types" {
     interface SessionData {
+        id?: string;
         jwt?: string;
         accessToken?: string;
         refreshToken?: string;

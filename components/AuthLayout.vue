@@ -19,10 +19,11 @@ defineProps<{
                     <div class="flex flex-col items-center gap-4">
                         <NuxtLink
                             to="/"
-                            class="flex flex-col items-center gap-2 font-medium"
-                        >
-                            <div class="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon class="size-9 fill-current text-[var(--foreground)] dark:text-white" />
+                            class="flex flex-col items-center gap-2 font-medium">
+                            <div
+                                class="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
+                                <AppLogoIcon
+                                    class="size-9 fill-current text-[var(--foreground)] dark:text-white" />
                             </div>
                             <span class="sr-only">{{ title }}</span>
                         </NuxtLink>
@@ -31,7 +32,8 @@ defineProps<{
                             <h1 class="text-xl font-medium">
                                 {{ title }}
                             </h1>
-                            <p class="text-center text-sm text-muted-foreground">
+                            <p
+                                class="text-center text-sm text-muted-foreground">
                                 {{ description }}
                             </p>
                         </div>

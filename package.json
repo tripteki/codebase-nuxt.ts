@@ -7,6 +7,7 @@
     "license": "UNLICENSED",
     "type": "module",
     "scripts": {
+
         "lint": "eslint . --fix && npx prettier --write .",
         "dev": "nuxt dev",
         "build": "nuxt build",
@@ -14,9 +15,15 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "start": "nuxt start",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:e2e": "playwright test",
+        "test:e2e:ui": "playwright test --ui",
         "component": "npx shadcn-vue@latest add"
     },
+
     "dependencies": {
+
         "@nuxtjs/color-mode": "^4.0.0",
         "@nuxtjs/device": "^4.0.0",
         "@nuxtjs/i18n": "^10.4.0",
@@ -42,6 +49,7 @@
         "nuxt-toastify": "^1.1.0",
         "pinia": "^3.0.4",
         "pusher-js": "^8.5.0",
+        "socket.io-client": "^4.8.1",
         "radix-vue": "^1.9.17",
         "tailwind-merge": "^2.6.1",
         "tailwindcss-animate": "^1.0.7",
@@ -49,10 +57,13 @@
         "vue-chartjs": "^5.3.3",
         "vue3-apexcharts": "^1.11.1"
     },
+
     "devDependencies": {
+
         "@css-inline/css-inline": "^0.14.3",
         "@nuxtjs/eslint-config": "^12.1.0",
         "@nuxtjs/eslint-config-typescript": "^12.1.0",
+        "@playwright/test": "^1.52.0",
         "@tripteki/prettier-config": "^1.0.0",
         "autoprefixer": "^10.5.0",
         "eslint": "^9.39.4",
@@ -61,6 +72,7 @@
         "shadcn-nuxt": "^2.7.4",
         "tailwindcss": "^3.4.19",
         "typescript": "^5.9.3",
+        "vitest": "^3.2.4",
         "vue-tsc": "^3.3.4"
     }
 }

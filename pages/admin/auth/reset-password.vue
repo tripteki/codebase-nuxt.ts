@@ -10,14 +10,23 @@ import {
 
 import InputError from "@/components/InputError.vue";
 import AuthLayout from "@/components/AuthLayout.vue";
+import AlertError from "@/components/AlertError.vue";
 import { Button, } from "@/components/ui/button";
 import { Input, } from "@/components/ui/input";
 import { Label, } from "@/components/ui/label";
 import { Spinner, } from "@/components/ui/spinner";
+import {
+    parseApiErrors,
+    focusPasswordMatchError,
+} from "@/lib/parse-api-errors";
+import { cn, } from "@/lib/utils";
+import { definePagePublic, } from "@/lib/define-page-auth";
 
 definePageMeta ({
     layout: false,
 });
+
+definePagePublic ();
 
 const route = useRoute ();
 
@@ -36,19 +45,16 @@ const data = reactive ({
     password_confirmation: "",
 });
 
-const errors = ref<Record<string, string>> ({});
+const errors = ref<Record<string, string>>({});
 const processing = ref (false);
 
-async function submit (event: Event): Promise<void>
-{
+async function submit (event: Event): Promise<void> {
     event.preventDefault ();
     processing.value = true;
     errors.value = {};
 
-    try
-    {
-        if (token.value)
-        {
+    try {
+        if (token.value) {
             await $fetch ("/api/auth/reset-password", {
                 method: "POST",
                 body: {
@@ -58,9 +64,7 @@ async function submit (event: Event): Promise<void>
                     password_confirmation: data.password_confirmation,
                 },
             });
-        }
-        else
-        {
+        } else {
             await $fetch ("/api/auth/reset-password", {
                 method: "POST",
                 body: {
@@ -74,24 +78,16 @@ async function submit (event: Event): Promise<void>
 
         await navigateTo ({
             path: "/admin/auth/login",
-            query: { status: t ("password_reset"), },
+            query: { status: t ("password_reset") },
         });
-    }
-    catch (throwable: unknown)
-    {
-        const payload = (throwable as { data?: { errors?: Record<string, string> }; })?.data;
+    } catch (throwable: unknown) {
+        const payload = (throwable as { data?: Record<string, unknown> })?.data;
 
-        if (payload?.errors)
-        {
-            errors.value = payload.errors;
-        }
-        else
-        {
-            errors.value = { password: t ("something_went_wrong"), };
-        }
-    }
-    finally
-    {
+        errors.value = focusPasswordMatchError (
+            parseApiErrors (payload, t ("something_went_wrong")),
+            "password"
+        );
+    } finally {
         processing.value = false;
     }
 }
@@ -99,66 +95,74 @@ async function submit (event: Event): Promise<void>
 
 <template>
     <AuthLayout
-        :title="t('reset_password_title')"
-        :description="t('reset_password_description')"
-    >
-        <form @submit="submit">
-        <div class="grid gap-6">
-            <div>
-                <Label for="email">{{ t("email") }}</Label>
-                <Input
-                    id="email"
-                    type="email"
-                    name="email"
-                    autocomplete="email"
-                    :model-value="email"
-                    readonly
-                />
-                <InputError :message="errors.email" />
-            </div>
+        :title="t ('reset_password_title')"
+        :description="t ('reset_password_description')">
+        <form novalidate @submit.prevent="submit">
+            <AlertError :message="errors.general" />
 
-            <div>
-                <Label for="password">{{ t("password") }}</Label>
-                <Input
-                    id="password"
-                    v-model="data.password"
-                    type="password"
-                    name="password"
-                    autocomplete="new-password"
-                    autofocus
-                    :placeholder="t('password_placeholder')"
-                />
-                <InputError :message="errors.password" />
-            </div>
+            <div class="grid gap-6">
+                <div>
+                    <Label for="email">{{ t ("email") }}</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        :model-value="email"
+                        readonly />
+                    <InputError :message="errors.email" />
+                </div>
 
-            <div>
-                <Label for="password_confirmation">
-                    {{ t("password_confirmation_label") }}
-                </Label>
-                <Input
-                    id="password_confirmation"
-                    v-model="data.password_confirmation"
-                    type="password"
-                    name="password_confirmation"
-                    autocomplete="new-password"
-                    :placeholder="t('password_confirmation_placeholder')"
-                />
-                <InputError :message="errors.password_confirmation" />
-            </div>
+                <div>
+                    <Label for="password">{{ t ("password") }}</Label>
+                    <Input
+                        id="password"
+                        v-model="data.password"
+                        type="password"
+                        name="password"
+                        autocomplete="new-password"
+                        autofocus
+                        :placeholder="t ('password_placeholder')"
+                        :aria-invalid="!! errors.password"
+                        :class="
+                            cn (
+                                errors.password &&
+                                    'border-destructive focus-visible:ring-destructive/30'
+                            )
+                        " />
+                    <InputError :message="errors.password" />
+                </div>
 
-            <Button
-                type="submit"
-                class="mt-2 w-full gap-2"
-                :disabled="processing"
-                data-test="reset-password-button"
-            >
-                <Spinner
-                    v-if="processing"
-                    class="h-4 w-4"
-                />
-                {{ processing ? t("resetting") : t("reset_password") }}
-            </Button>
-        </div>
+                <div>
+                    <Label for="password_confirmation">
+                        {{ t ("password_confirmation_label") }}
+                    </Label>
+                    <Input
+                        id="password_confirmation"
+                        v-model="data.password_confirmation"
+                        type="password"
+                        name="password_confirmation"
+                        autocomplete="new-password"
+                        :placeholder="t ('password_confirmation_placeholder')"
+                        :aria-invalid="!! errors.password_confirmation"
+                        :class="
+                            cn (
+                                errors.password_confirmation &&
+                                    'border-destructive focus-visible:ring-destructive/30'
+                            )
+                        " />
+                    <InputError :message="errors.password_confirmation" />
+                </div>
+
+                <Button
+                    type="submit"
+                    class="mt-2 w-full gap-2"
+                    :disabled="processing"
+                    data-test="reset-password-button">
+                    <Spinner v-if="processing" />
+                    {{ processing ? t ("resetting") : t ("reset_password") }}
+                </Button>
+            </div>
         </form>
     </AuthLayout>
 </template>

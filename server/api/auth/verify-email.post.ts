@@ -1,3 +1,4 @@
+import { parseApiErrors, } from "../../../lib/parse-api-errors";
 import { callServer, } from "../../utils/call-server";
 import { getLocaleFromEvent, getServerTranslation, } from "../../utils/i18n";
 
@@ -33,7 +34,7 @@ export default defineEventHandler (async (event) =>
 
     const response = await callServer ({
         baseUrl: config.public.authURL as string,
-        url: `/verify-email/${email}`,
+        url: `/verify-email/${encodeURIComponent (email)}`,
         method: "POST",
         data: {},
         params: { signed, },
@@ -46,30 +47,14 @@ export default defineEventHandler (async (event) =>
         if (axiosError?.response)
         {
             const status = axiosError.response.status || 500;
-            let message = t ("verification_failed");
-            let errors: Record<string, string> = {};
-
-            if (status === 403)
-            {
-                message = t ("not_signed");
-            }
-            else if (axiosError.response.data?.message)
-            {
-                message = axiosError.response.data.message;
-            }
-            else if (typeof axiosError.response.data === "string")
-            {
-                message = axiosError.response.data;
-            }
-
-            if (axiosError.response.data?.errors)
-            {
-                errors = axiosError.response.data.errors;
-            }
+            const errors = parseApiErrors (
+                axiosError.response.data,
+                status === 403 ? t ("not_signed") : t ("verification_failed")
+            );
 
             throw createError ({
                 statusCode: status,
-                data: { success: false, message, errors, },
+                data: { success: false, errors, },
             });
         }
 

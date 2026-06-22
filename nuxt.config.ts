@@ -3,12 +3,18 @@
 const { name, version, } = require ("./package.json");
 import i18n from "./nuxt-i18n.config";
 import seo from "./nuxt-seo.config";
+import { defaultBrandColors, } from "./lib/branding";
+import { createPwaManifest, } from "./lib/pwa-manifest";
+import { PWA_NAVIGATION_DENYLIST, } from "./lib/pwa-navigation-denylist";
 import { pwaSplashLinks, } from "./lib/pwa-splash-links";
 
 const appName = process.env.NUXT_PUBLIC_APP_NAME || name || "codebase";
 const formattedAppName = appName.charAt (0).toUpperCase () + appName.slice (1);
 const appDescription = `The ${appName} WebApp!`;
 const appUrl = process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost";
+const webPushEnabled = Boolean (process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY?.trim ());
+const isDev = process.env.NODE_ENV === "development";
+const pwaDevEnabled = isDev;
 
 export default defineNuxtConfig ({
 
@@ -17,7 +23,14 @@ export default defineNuxtConfig ({
     typescript: {
 
         strict: true,
-        typeCheck: true,
+        typeCheck: "build",
+        tsConfig: {
+            exclude: [
+                "../../tests",
+                "../../playwright.config.ts",
+                "../../vitest.config.ts",
+            ],
+        },
     },
 
     // https://masteringnuxt.com/blog/configuration-in-nuxt-3-runtimeConfig-vs-appConfig
@@ -31,15 +44,17 @@ export default defineNuxtConfig ({
 
             appName: process.env.NUXT_PUBLIC_APP_NAME || name || "codebase",
             appVersion: process.env.NUXT_PUBLIC_APP_VERSION || version || "1.0.0",
-            appUrl: process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost",
-            baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://api.backend.localhost",
+            appUrl: process.env.NUXT_PUBLIC_APP_URL || "http://localhost:3000",
+            baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://api.backend.localhost/api",
             authURL: process.env.NUXT_PUBLIC_AUTH_URL || "http://api.backend.localhost/api/v1/auth",
             apiUrl: process.env.NUXT_PUBLIC_API_URL || "http://api.backend.localhost",
             reverbAppKey: process.env.NUXT_PUBLIC_REVERB_APP_KEY || "",
             reverbHost: process.env.NUXT_PUBLIC_REVERB_HOST || "127.0.0.1",
             reverbPort: process.env.NUXT_PUBLIC_REVERB_PORT || "8080",
             reverbScheme: process.env.NUXT_PUBLIC_REVERB_SCHEME || "http",
-            env: process.env.NUXT_PUBLIC_APP_ENV || "production",
+            vapidPublicKey: process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY || "",
+            realtimeDriver: process.env.NUXT_PUBLIC_REALTIME_DRIVER || "echo",
+            env: process.env.NUXT_PUBLIC_APP_ENV || "local",
             language: process.env.NUXT_PUBLIC_APP_LANG || "en",
         },
     },
@@ -61,74 +76,59 @@ export default defineNuxtConfig ({
     plugins: [
 
         "~/plugins/apexchart.client.ts",
-        "~/plugins/service-worker-cleanup.client.ts",
+        "~/plugins/pwa-head.ts",
+        "~/plugins/pwa-install-banner.client.ts",
+        "~/plugins/web-push.client.ts",
     ],
 
     pwa: {
 
         registerType: "autoUpdate",
 
-        injectRegister: process.env.NODE_ENV === "production" ? "auto" : false,
+        strategies: "injectManifest",
+
+        srcDir: "service",
+
+        filename: "sw.ts",
+
+        injectRegister:
+            pwaDevEnabled || webPushEnabled || ! isDev ? "auto" : false,
 
         devOptions: {
 
-            enabled: false,
+            enabled: pwaDevEnabled,
             type: "module",
+            navigateFallback: "/",
         },
 
-        manifest: {
-
+        manifest: createPwaManifest ({
             name: formattedAppName,
-            short_name: appName,
+            shortName: appName,
             description: appDescription,
-
-            id: "/",
-            start_url: "/",
-            display: "standalone",
-            orientation: "portrait",
-            theme_color: "#FFFFFF",
-            background_color: "#FFFFFF",
-
-            icons: [
-
-                {
-                    src: "/manifest/icon-192x192.png",
-                    sizes: "192x192",
-                    type: "image/png",
-                },
-                {
-                    src: "/manifest/icon-384x384.png",
-                    sizes: "384x384",
-                    type: "image/png",
-                },
-                {
-                    src: "/manifest/icon-512x512.png",
-                    sizes: "512x512",
-                    type: "image/png",
-                },
-            ],
-        },
+        }),
 
         workbox: {
 
             navigateFallback: "/",
-            navigateFallbackDenylist: [
-                /^\/api/,
-                /^\/sw\.js$/,
-                /^\/workbox-.*\.js$/,
-                /^\/manifest\.webmanifest$/,
-            ],
+            navigateFallbackDenylist: PWA_NAVIGATION_DENYLIST,
             globPatterns: [
                 "**/*.{js,css,html,ico,png,svg,webmanifest}",
             ],
+        },
+
+        client: {
+
+            installPrompt: false,
         },
     },
 
     routeRules: {
 
         "/sw.js": { prerender: false, },
+        "/dev-sw.js": { prerender: false, },
         "/workbox-*.js": { prerender: false, },
         "/manifest.webmanifest": { prerender: false, },
+        "/api/pwa/manifest": { prerender: false, },
         "/auth/login": { redirect: "/admin/auth/login", },
         "/auth/register": { redirect: "/admin/auth/register", },
         "/auth/forgot-password": { redirect: "/admin/auth/forgot-password", },
@@ -137,6 +137,10 @@ export default defineNuxtConfig ({
     auth: {
 
         baseURL: `${process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost"}/api/auth`,
+
+        // Sidebase SSR refresh runs on every request and logs 401 when cookies are stale.
+        // Client session + plugins/auth-refresh.server.ts handle refresh when the JWT expires.
+        disableServerSideAuth: true,
 
         globalAppMiddleware: false,
 
@@ -271,8 +275,16 @@ export default defineNuxtConfig ({
                     content: "index, follow",
                 },
                 {
+                    name: "apple-mobile-web-app-title",
+                    content: formattedAppName,
+                },
+                {
+                    name: "application-name",
+                    content: formattedAppName,
+                },
+                {
                     name: "theme-color",
-                    content: "#FFFFFF",
+                    content: defaultBrandColors.primary,
                 },
                 {
                     name: "mobile-web-app-capable",
@@ -342,7 +354,7 @@ export default defineNuxtConfig ({
                 },
                 {
                     rel: "manifest",
-                    href: "/manifest.webmanifest",
+                    href: "/api/pwa/manifest",
                 },
                 {
                     rel: "apple-touch-icon",

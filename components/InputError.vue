@@ -8,14 +8,13 @@ const props = defineProps<{
     class?: string;
 }>();
 
-const classes = computed (() => cn ("text-sm text-red-600 dark:text-red-400", props.class));
+const classes = computed (() =>
+    cn ("text-sm text-red-600 dark:text-red-400", props.class)
+);
 </script>
 
 <template>
-    <p
-        v-if="message"
-        :class="classes"
-    >
+    <p v-if="message" :class="classes">
         {{ message }}
     </p>
 </template>

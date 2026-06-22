@@ -29,6 +29,7 @@ export default defineEventHandler (async (event) =>
     }
 
     return {
+        id: response.data?.id,
         user: response.data,
     };
 });
