@@ -1,6 +1,6 @@
 <h1 align="center">Codebase Nuxt</h1>
 
-Web frontend built with **Nuxt 4**, **Vue 3**, **@nuxtjs/i18n 10**, **@sidebase/nuxt-auth**, **Tailwind CSS 3**, and **PWA** support. Consumes a backend-agnostic HTTP API via `NUXT_PUBLIC_*_URL` environment variables.
+Web frontend built with **Nuxt 4**, **Vue 3**, **@nuxtjs/i18n 10**, **@sidebase/nuxt-auth**, **Tailwind CSS 4**, **Flowbite**, and **PWA** support. Consumes a backend-agnostic HTTP API via `NUXT_PUBLIC_*_URL` environment variables.
 
 ### Features
 
@@ -10,7 +10,7 @@ Web frontend built with **Nuxt 4**, **Vue 3**, **@nuxtjs/i18n 10**, **@sidebase/
 | 2 | Authentication | Login, register, forgot/reset password, verify email | @sidebase/nuxt-auth (local provider) |
 | 3 | API proxy | Auth proxied to backend via Nitro routes | `server/api/auth/*` |
 | 4 | I18N | English, Indonesian, Malay (cookie-based, no URL prefix) | @nuxtjs/i18n 10 |
-| 5 | UI | Auth layout, dashboard, theme toggle | Tailwind + shadcn-vue |
+| 5 | UI | Auth layout, dashboard, theme toggle | Tailwind CSS 4 + Flowbite |
 | 6 | User & profile | `/users/me`, interests, password update | `useUserProfile` → REST API |
 | 7 | Notifications | List, read, delete, unread badge | `useNotifications` → `/api/v1/notifications/*` |
 | 8 | Real-time | Notifications + optional admin events | `useNotificationBroadcast` + Echo/Reverb or Socket.IO |
@@ -109,11 +109,28 @@ Output: `.output/public/` (SPA mode when `BUILD_STATIC=true` - same as Next stat
 npm run lint
 ```
 
-#### Add shadcn-vue component
+### UI (Flowbite)
 
-```bash
-npm run component
-```
+- **CSS:** `assets/css/main.css` — Tailwind v4 + Flowbite plugin + `brand-theme.css`
+- **Class tokens:** `lib/flowbite-classes.ts` (`fbCard`, `fbMuted`, `fbAlert*`, …)
+- **Components:** `components/flowbite/Fb*.vue` — thin wrappers (`FbButton`, `FbInput`, `FbLabel`, `FbCheckbox`, `FbSpinner`, `FbApexChart`, `FbDataTable`, `FbWysiwyg`)
+- **Init:** `plugins/flowbite.client.ts` calls `initFlowbite()` on `page:finish`
+- **Alerts:** use `AlertSuccess`, `AlertWarning`, `AlertError` — not raw Flowbite JS widgets
+
+### Brand theme
+
+- **CSS variables:** `--brand-primary`, `--brand-secondary`, `--brand-tertiary` in `assets/css/brand-theme.css`
+- **Runtime:** `plugins/brand-css.ts` injects colors from `lib/branding.ts`
+- **Override via env (optional):** `NUXT_PUBLIC_BRAND_PRIMARY`, `NUXT_PUBLIC_BRAND_SECONDARY`, `NUXT_PUBLIC_BRAND_TERTIARY` (hex)
+- **Charts:** `FbApexChart` reads brand colors from CSS variables at render time
+
+### Flowbite plugins (reusable wrappers)
+
+| Plugin | Deps | Component | Notes |
+|--------|------|-----------|-------|
+| Charts | `apexcharts`, `vue3-apexcharts` | `FbApexChart` | `lib/flowbite-chart-options.ts` — dark mode via `@nuxtjs/color-mode` |
+| Datatables | `simple-datatables` | `FbDataTable` | slot `<thead>` / `<tbody>`; pass `options` from [Flowbite datatables docs](https://flowbite.com/docs/plugins/datatables/) |
+| WYSIWYG | TipTap + `flowbite-typography` | `FbWysiwyg` | `v-model` HTML; StarterKit toolbar |
 
 ### Routes
 
@@ -278,9 +295,9 @@ Low-level Echo helper (`echo` driver): `lib/echo.ts` → `createEcho(accessToken
 | `@nuxtjs/seo` | SEO, sitemap, robots |
 | `@sidebase/nuxt-auth` | Session + JWT auth |
 | `@vite-pwa/nuxt` | Service worker + manifest |
-| `@nuxtjs/tailwindcss` | Tailwind CSS |
-| `@nuxtjs/color-mode` | Dark mode (shadcn-vue) |
-| `shadcn-nuxt` | UI components |
+| `@tailwindcss/vite` | Tailwind CSS 4 (Vite plugin) |
+| `flowbite` | UI theme + Tailwind plugin |
+| `@nuxtjs/color-mode` | Dark mode (`class`) |
 | `@pinia/nuxt` | State management |
 | `nuxt-toastify` | Toast notifications |
 
@@ -295,17 +312,17 @@ codebase-nuxt.ts/
 │   └── auth/                      # Signed URL flows
 ├── components/
 │   ├── AuthLayout.vue
-│   ├── ui/                        # shadcn-vue components
+│   ├── flowbite/                  # FbButton, FbInput, FbLabel, …
 │   ├── I18nSwitcher.vue
 │   └── ThemeToggle.vue
 ├── composables/                   # useSocket, useNotificationBroadcast, useCall
-├── lib/                           # echo, realtime-client, api-base
+├── lib/                           # echo, realtime-client, api-base, flowbite-classes
 ├── lang/                          # en, id, ms JSON
 ├── layouts/
 ├── server/
 │   └── api/auth/                  # Nitro auth proxies
 ├── stores/
-├── plugins/                       # apexchart, SW cleanup (dev)
+├── plugins/                       # flowbite, apexchart, web-push, PWA
 ├── public/manifest/               # PWA assets
 ├── nuxt.config.ts
 ├── nuxt-i18n.config.ts

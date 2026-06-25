@@ -2,7 +2,6 @@
 import { computed, } from "vue";
 import { useAuth, useTranslation, } from "#imports";
 
-import { Avatar, AvatarFallback, AvatarImage, } from "@/components/ui/avatar";
 import { getUserInitials, } from "@/lib/user-initials";
 import type { UserMeDto } from "@/types/admin/settings";
 
@@ -24,12 +23,15 @@ const initials = computed (() =>
         to="/admin/settings"
         :aria-label="t ('profile')"
         data-test="profile-link"
-        class="rounded-full ring-offset-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-        <Avatar class="h-8 w-8 text-xs" shape="circle">
-            <AvatarImage v-if="avatarUrl" :src="avatarUrl" alt="" />
-            <AvatarFallback class="text-xs font-medium">
-                {{ initials }}
-            </AvatarFallback>
-        </Avatar>
+        class="rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2">
+        <div
+            class="icon-avatar-brand flex h-8 w-8 items-center justify-center overflow-hidden rounded-full text-xs font-medium">
+            <img
+                v-if="avatarUrl"
+                :src="avatarUrl"
+                alt=""
+                class="h-full w-full object-cover" />
+            <span v-else>{{ initials }}</span>
+        </div>
     </NuxtLink>
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type HTMLAttributes, } from "vue";
 
-import { Alert, AlertDescription, AlertTitle, } from "@/components/ui/alert";
+import { fbAlertSuccess, } from "@/lib/flowbite-classes";
 import { cn, } from "@/lib/utils";
 
 const props = defineProps<{
@@ -12,23 +12,22 @@ const props = defineProps<{
 </script>
 
 <template>
-    <Alert v-if="message" variant="success" :class="cn ('mb-4', props.class)">
+    <div
+        v-if="message"
+        :class="cn (fbAlertSuccess, props.class)"
+        role="alert">
         <svg
+            class="me-3 inline h-4 w-4 shrink-0"
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M21.801 10A10 10 0 1 1 17 3.335" />
-            <path d="m9 11 3 3L22 4" />
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
         </svg>
-        <AlertTitle v-if="title">
-            {{ title }}
-        </AlertTitle>
-        <AlertDescription>
+        <div>
+            <span v-if="title" class="font-medium">{{ title }}</span>
             <p>{{ message }}</p>
-        </AlertDescription>
-    </Alert>
+        </div>
+    </div>
 </template>

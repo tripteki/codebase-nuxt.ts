@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, } from "vue";
 
+import { fbMuted, } from "@/lib/flowbite-classes";
 import {
     notificationBody,
     notificationIsUnread,
@@ -31,7 +32,7 @@ const body = computed (() => notificationBody (props.item));
         </p>
         <p
             v-if="body"
-            class="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+            :class="['mt-0.5 line-clamp-2 text-xs', fbMuted]">
             {{ body }}
         </p>
     </div>

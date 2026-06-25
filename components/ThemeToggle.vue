@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useTranslation, } from "#imports";
 
+import FbButton from "@/components/flowbite/FbButton.vue";
 import { useTheme, } from "@/composables/useTheme";
-import { Button, } from "@/components/ui/button";
 
 const { t, } = useTranslation ("common");
 const { theme, toggleTheme, mounted, } = useTheme ();
 </script>
 
 <template>
-    <Button
+    <FbButton
         variant="ghost"
         size="icon"
         type="button"
@@ -47,5 +47,5 @@ const { theme, toggleTheme, mounted, } = useTheme ();
             class="h-5 w-5">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         </svg>
-    </Button>
+    </FbButton>
 </template>

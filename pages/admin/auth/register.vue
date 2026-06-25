@@ -6,15 +6,14 @@ import AlertError from "@/components/AlertError.vue";
 import AuthLayout from "@/components/AuthLayout.vue";
 import InputError from "@/components/InputError.vue";
 import TextLink from "@/components/TextLink.vue";
-import { Button, } from "@/components/ui/button";
-import { Input, } from "@/components/ui/input";
-import { Label, } from "@/components/ui/label";
-import { Spinner, } from "@/components/ui/spinner";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbInput from "@/components/flowbite/FbInput.vue";
+import FbLabel from "@/components/flowbite/FbLabel.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
 import {
     parseApiErrors,
     focusPasswordMatchError,
 } from "@/lib/parse-api-errors";
-import { cn, } from "@/lib/utils";
 import { useRequireGuest, } from "@/composables/useAuthGuard";
 import { definePageGuest, } from "@/lib/define-page-auth";
 
@@ -90,8 +89,8 @@ async function submit (event: Event): Promise<void> {
 
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label html-for="name">{{ t ("name") }}</Label>
-                    <Input
+                    <FbLabel html-for="name">{{ t ("name") }}</FbLabel>
+                    <FbInput
                         id="name"
                         v-model="data.name"
                         type="text"
@@ -101,19 +100,13 @@ async function submit (event: Event): Promise<void> {
                         tabindex="1"
                         autocomplete="name"
                         :placeholder="t ('username')"
-                        :aria-invalid="!! errors.name"
-                        :class="
-                            cn (
-                                errors.name &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! errors.name" />
                     <InputError :message="errors.name" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label html-for="email">{{ t ("email_address") }}</Label>
-                    <Input
+                    <FbLabel html-for="email">{{ t ("email_address") }}</FbLabel>
+                    <FbInput
                         id="email"
                         v-model="data.email"
                         type="email"
@@ -122,19 +115,13 @@ async function submit (event: Event): Promise<void> {
                         tabindex="2"
                         autocomplete="email"
                         :placeholder="t ('email_placeholder')"
-                        :aria-invalid="!! errors.email"
-                        :class="
-                            cn (
-                                errors.email &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! errors.email" />
                     <InputError :message="errors.email" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label html-for="password">{{ t ("password") }}</Label>
-                    <Input
+                    <FbLabel html-for="password">{{ t ("password") }}</FbLabel>
+                    <FbInput
                         id="password"
                         v-model="data.password"
                         type="password"
@@ -143,21 +130,15 @@ async function submit (event: Event): Promise<void> {
                         tabindex="3"
                         autocomplete="new-password"
                         :placeholder="t ('password_placeholder')"
-                        :aria-invalid="!! errors.password"
-                        :class="
-                            cn (
-                                errors.password &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! errors.password" />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label html-for="password_confirmation">
+                    <FbLabel html-for="password_confirmation">
                         {{ t ("password_confirmation_label") }}
-                    </Label>
-                    <Input
+                    </FbLabel>
+                    <FbInput
                         id="password_confirmation"
                         v-model="data.password_confirmation"
                         type="password"
@@ -166,28 +147,22 @@ async function submit (event: Event): Promise<void> {
                         tabindex="4"
                         autocomplete="new-password"
                         :placeholder="t ('password_confirmation_placeholder')"
-                        :aria-invalid="!! errors.password_confirmation"
-                        :class="
-                            cn (
-                                errors.password_confirmation &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! errors.password_confirmation" />
                     <InputError :message="errors.password_confirmation" />
                 </div>
 
-                <Button
+                <FbButton
                     type="submit"
                     class="mt-2 w-full"
                     tabindex="5"
                     :disabled="processing"
                     data-test="register-user-button">
-                    <Spinner v-if="processing" />
+                    <FbSpinner v-if="processing" />
                     {{ processing ? t ("registering") : t ("create_account") }}
-                </Button>
+                </FbButton>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="text-center text-sm text-gray-500 dark:text-gray-400">
                 {{ t ("already_have_account") }}{{ " " }}
                 <TextLink to="/admin/auth/login" tabindex="6">
                     {{ t ("log_in") }}

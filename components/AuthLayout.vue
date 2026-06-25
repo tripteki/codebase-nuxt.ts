@@ -2,6 +2,7 @@
 import AppLogoIcon from "@/components/AppLogoIcon.vue";
 import FooterLayout from "@/components/FooterLayout.vue";
 import HeaderLayout from "@/components/HeaderLayout.vue";
+import { fbPage, } from "@/lib/flowbite-classes";
 
 defineProps<{
     title: string;
@@ -10,7 +11,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col bg-background">
+    <div :class="fbPage">
         <HeaderLayout />
 
         <main class="flex-1 flex items-center justify-center p-6 md:p-10">
@@ -23,7 +24,7 @@ defineProps<{
                             <div
                                 class="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
                                 <AppLogoIcon
-                                    class="size-9 fill-current text-[var(--foreground)] dark:text-white" />
+                                    class="size-9 fill-current text-gray-900 dark:text-white" />
                             </div>
                             <span class="sr-only">{{ title }}</span>
                         </NuxtLink>
@@ -33,7 +34,7 @@ defineProps<{
                                 {{ title }}
                             </h1>
                             <p
-                                class="text-center text-sm text-muted-foreground">
+                                class="text-center text-sm text-gray-500 dark:text-gray-400">
                                 {{ description }}
                             </p>
                         </div>

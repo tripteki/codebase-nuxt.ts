@@ -1,6 +1,7 @@
 "use strict";
 
 const { name, version, } = require ("./package.json");
+import tailwindcss from "@tailwindcss/vite";
 import i18n from "./nuxt-i18n.config";
 import seo from "./nuxt-seo.config";
 import { defaultBrandColors, } from "./lib/branding";
@@ -69,12 +70,11 @@ export default defineNuxtConfig ({
         "@nuxtjs/device",
         "@nuxtjs/color-mode",
         "nuxt-toastify",
-        "@nuxtjs/tailwindcss",
-        "shadcn-nuxt",
     ],
 
     plugins: [
 
+        "~/plugins/flowbite.client.ts",
         "~/plugins/apexchart.client.ts",
         "~/plugins/pwa-head.ts",
         "~/plugins/pwa-install-banner.client.ts",
@@ -227,13 +227,9 @@ export default defineNuxtConfig ({
         },
     } : {}),
 
-    postcss: {
+    vite: {
 
-        plugins: {
-
-            tailwindcss: {},
-            autoprefixer: {},
-        },
+        plugins: [tailwindcss ()],
     },
 
     css: [
@@ -251,18 +247,6 @@ export default defineNuxtConfig ({
     colorMode: {
 
         classSuffix: "",
-    },
-
-    shadcn: {
-
-        prefix: "",
-        componentDir: './components/ui',
-    },
-
-    tailwindcss: {
-
-        cssPath: "~/assets/css/main.css",
-        configPath: "tailwind.config.js",
     },
 
     app: {

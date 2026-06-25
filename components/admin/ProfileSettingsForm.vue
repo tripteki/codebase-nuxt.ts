@@ -6,10 +6,11 @@ import AlertError from "@/components/AlertError.vue";
 import AlertSuccess from "@/components/AlertSuccess.vue";
 import InputError from "@/components/InputError.vue";
 import WebPushEnableSettings from "@/components/admin/WebPushEnableSettings.vue";
-import { Button, } from "@/components/ui/button";
-import { Input, } from "@/components/ui/input";
-import { Label, } from "@/components/ui/label";
-import { Spinner, } from "@/components/ui/spinner";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbInput from "@/components/flowbite/FbInput.vue";
+import FbLabel from "@/components/flowbite/FbLabel.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
+import { fbInput, fbMuted, } from "@/lib/flowbite-classes";
 import { useUserProfile, } from "@/composables/useUserProfile";
 import { actionErrors, } from "@/lib/admin-action";
 import type { UserMeDto } from "@/types/admin/settings";
@@ -137,8 +138,8 @@ onMounted (() => {
 
         <div
             v-if="isLoading"
-            class="flex items-center gap-2 text-sm text-muted-foreground">
-            <Spinner class="h-4 w-4" />
+            :class="['flex items-center gap-2', fbMuted]">
+            <FbSpinner class="h-4 w-4" />
             {{ t ("loading") }}
         </div>
 
@@ -146,10 +147,10 @@ onMounted (() => {
             <WebPushEnableSettings />
 
             <div class="space-y-2">
-                <Label for="avatar">{{ t ("avatar") }}</Label>
+                <FbLabel html-for="avatar">{{ t ("avatar") }}</FbLabel>
                 <div class="flex items-center gap-4">
                     <div
-                        class="size-20 shrink-0 overflow-hidden rounded-full border bg-muted">
+                        class="size-20 shrink-0 overflow-hidden rounded-full border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-700">
                         <img
                             v-if="avatarPreview || currentAvatarUrl"
                             :src="
@@ -158,10 +159,11 @@ onMounted (() => {
                             alt=""
                             class="h-full w-full object-cover" />
                     </div>
-                    <Input
+                    <input
                         id="avatar"
                         type="file"
                         accept="image/*"
+                        :class="fbInput"
                         @change="onAvatarChange" />
                 </div>
                 <InputError :message="errors.avatar" />
@@ -169,35 +171,46 @@ onMounted (() => {
 
             <div class="grid gap-4 md:grid-cols-2">
                 <div class="space-y-2">
-                    <Label for="name">{{ t ("name") }}</Label>
-                    <Input id="name" v-model="form.name" required />
+                    <FbLabel html-for="name">{{ t ("name") }}</FbLabel>
+                    <FbInput
+                        id="name"
+                        v-model="form.name"
+                        name="name"
+                        required
+                        :invalid="!! errors.name" />
                     <InputError :message="errors.name" />
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="email">{{ t ("email") }}</Label>
-                    <Input
+                    <FbLabel html-for="email">{{ t ("email") }}</FbLabel>
+                    <FbInput
                         id="email"
                         v-model="form.email"
                         type="email"
-                        required />
+                        name="email"
+                        required
+                        :invalid="!! errors.email" />
                     <InputError :message="errors.email" />
                 </div>
 
                 <div class="space-y-2 md:col-span-2">
-                    <Label for="full_name">{{ t ("full_name") }}</Label>
-                    <Input id="full_name" v-model="form.full_name" />
+                    <FbLabel html-for="full_name">{{ t ("full_name") }}</FbLabel>
+                    <FbInput
+                        id="full_name"
+                        v-model="form.full_name"
+                        name="full_name"
+                        :invalid="!! errors.full_name" />
                     <InputError :message="errors.full_name" />
                 </div>
             </div>
 
             <div class="space-y-2">
-                <Label>{{ t ("interests") }}</Label>
+                <FbLabel>{{ t ("interests") }}</FbLabel>
                 <div class="flex flex-wrap gap-2">
                     <span
                         v-for="(interest, index) in interests"
                         :key="interest"
-                        class="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs">
+                        class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs dark:bg-gray-700">
                         {{ interest }}
                         <button
                             type="button"
@@ -208,16 +221,18 @@ onMounted (() => {
                     </span>
                 </div>
                 <div class="flex gap-2">
-                    <Input
+                    <input
                         v-model="newInterest"
+                        type="text"
+                        :class="fbInput"
                         :placeholder="t ('add_interest')"
                         @keydown.enter.prevent="addInterest ()" />
-                    <Button
+                    <FbButton
                         type="button"
                         variant="outline"
                         @click="addInterest ()">
                         {{ t ("add") }}
-                    </Button>
+                    </FbButton>
                 </div>
                 <datalist id="interest-suggestions">
                     <option
@@ -229,32 +244,36 @@ onMounted (() => {
 
             <div class="grid gap-4 md:grid-cols-2">
                 <div class="space-y-2">
-                    <Label for="password">{{ t ("new_password") }}</Label>
-                    <Input
+                    <FbLabel html-for="password">{{ t ("new_password") }}</FbLabel>
+                    <FbInput
                         id="password"
                         v-model="form.password"
                         type="password"
-                        autocomplete="new-password" />
+                        name="password"
+                        autocomplete="new-password"
+                        :invalid="!! errors.password" />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="password_confirmation">{{
+                    <FbLabel html-for="password_confirmation">{{
                         t ("confirm_password")
-                    }}</Label>
-                    <Input
+                    }}</FbLabel>
+                    <FbInput
                         id="password_confirmation"
                         v-model="form.password_confirmation"
                         type="password"
-                        autocomplete="new-password" />
+                        name="password_confirmation"
+                        autocomplete="new-password"
+                        :invalid="!! errors.password_confirmation" />
                     <InputError :message="errors.password_confirmation" />
                 </div>
             </div>
 
-            <Button type="submit" :disabled="isSaving">
-                <Spinner v-if="isSaving" />
+            <FbButton type="submit" :disabled="isSaving">
+                <FbSpinner v-if="isSaving" />
                 {{ t ("save_changes") }}
-            </Button>
+            </FbButton>
         </template>
     </form>
 </template>

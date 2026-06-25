@@ -14,12 +14,12 @@ import AlertSuccess from "@/components/AlertSuccess.vue";
 import AuthLayout from "@/components/AuthLayout.vue";
 import InputError from "@/components/InputError.vue";
 import TextLink from "@/components/TextLink.vue";
-import { Button, } from "@/components/ui/button";
-import { Checkbox, } from "@/components/ui/checkbox";
-import { Input, } from "@/components/ui/input";
-import { Label, } from "@/components/ui/label";
-import { Spinner, } from "@/components/ui/spinner";
-import { cn, } from "@/lib/utils";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbCheckboxField from "@/components/flowbite/FbCheckboxField.vue";
+import FbInput from "@/components/flowbite/FbInput.vue";
+import FbLabel from "@/components/flowbite/FbLabel.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
+import { fbMuted, } from "@/lib/flowbite-classes";
 import { parseApiErrors, type ApiErrorPayload, } from "@/lib/parse-api-errors";
 import type { LoginProps } from "@/types/admin/auth";
 import { useRequireGuest, } from "@/composables/useAuthGuard";
@@ -113,8 +113,8 @@ async function submit (event: Event): Promise<void> {
 
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label html-for="email">{{ t ("email_address") }}</Label>
-                    <Input
+                    <FbLabel html-for="email">{{ t ("email_address") }}</FbLabel>
+                    <FbInput
                         id="email"
                         v-model="data.identifier"
                         type="text"
@@ -124,19 +124,13 @@ async function submit (event: Event): Promise<void> {
                         tabindex="1"
                         autocomplete="username"
                         :placeholder="t ('email_placeholder')"
-                        :aria-invalid="!! identifierError"
-                        :class="
-                            cn (
-                                identifierError &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! identifierError" />
                     <InputError :message="identifierError" />
                 </div>
 
                 <div class="grid gap-2">
-                    <div class="flex items-center">
-                        <Label html-for="password">{{ t ("password") }}</Label>
+                    <div class="mb-2 flex items-center justify-between">
+                        <FbLabel html-for="password" variant="inline">{{ t ("password") }}</FbLabel>
                         <TextLink
                             v-if="props.canResetPassword"
                             to="/admin/auth/forgot-password"
@@ -145,7 +139,7 @@ async function submit (event: Event): Promise<void> {
                             {{ t ("forgot_password_link") }}
                         </TextLink>
                     </div>
-                    <Input
+                    <FbInput
                         id="password"
                         v-model="data.password"
                         type="password"
@@ -154,39 +148,32 @@ async function submit (event: Event): Promise<void> {
                         tabindex="2"
                         autocomplete="current-password"
                         :placeholder="t ('password_placeholder')"
-                        :aria-invalid="!! passwordError"
-                        :class="
-                            cn (
-                                passwordError &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! passwordError" />
                     <InputError :message="passwordError" />
                 </div>
 
-                <div class="flex items-center space-x-3">
-                    <Checkbox
-                        id="remember"
-                        v-model="data.remember"
-                        name="remember"
-                        tabindex="3" />
-                    <Label html-for="remember">{{ t ("remember_me") }}</Label>
-                </div>
+                <FbCheckboxField
+                    id="remember"
+                    v-model="data.remember"
+                    name="remember"
+                    tabindex="3">
+                    {{ t ("remember_me") }}
+                </FbCheckboxField>
 
-                <Button
+                <FbButton
                     type="submit"
                     class="mt-4 w-full"
                     tabindex="4"
                     :disabled="processing"
                     data-test="login-button">
-                    <Spinner v-if="processing" />
+                    <FbSpinner v-if="processing" />
                     {{ processing ? t ("logging_in") : t ("log_in") }}
-                </Button>
+                </FbButton>
             </div>
 
             <div
                 v-if="props.canRegister"
-                class="text-center text-sm text-muted-foreground">
+                class="text-center text-sm text-gray-500 dark:text-gray-400">
                 {{ t ("dont_have_account") }}{{ " " }}
                 <TextLink to="/admin/auth/register" tabindex="5">
                     {{ t ("sign_up") }}

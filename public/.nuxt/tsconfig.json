@@ -188,12 +188,6 @@
       "#sitemap/*": [
         "../../node_modules/@nuxtjs/sitemap/dist/runtime/*"
       ],
-      "#link-checker": [
-        "../../node_modules/nuxt-link-checker/dist/runtime"
-      ],
-      "#link-checker/*": [
-        "../../node_modules/nuxt-link-checker/dist/runtime/*"
-      ],
       "@unhead/schema-org": [
         "../../node_modules/@unhead/schema-org-v2/dist/index"
       ],
@@ -210,7 +204,7 @@
         "../../node_modules/nuxt-seo-utils/dist/runtime/*"
       ],
       "#app-manifest": [
-        "./manifest/meta/dev"
+        "./manifest/meta/3c528f3f-aff1-4308-abb6-b1278d98287a.json"
       ],
       "#components": [
         "./components"
@@ -290,8 +284,6 @@
     "../../node_modules/@nuxtjs/device/node_modules",
     "../../node_modules/@nuxtjs/color-mode/node_modules",
     "../../node_modules/nuxt-toastify/node_modules",
-    "../../node_modules/@nuxtjs/tailwindcss/node_modules",
-    "../../node_modules/shadcn-nuxt/node_modules",
     "../../node_modules/@nuxt/devtools/node_modules",
     "../../node_modules/@nuxt/telemetry/node_modules",
     "../../node_modules/nuxt-site-config/node_modules",

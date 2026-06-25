@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, } from "vue";
 
+import { fbLink, } from "@/lib/flowbite-classes";
 import { cn, } from "@/lib/utils";
 
 const props = defineProps<{
@@ -8,12 +9,7 @@ const props = defineProps<{
     class?: string;
 }>();
 
-const classes = computed (() =>
-    cn (
-        "text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:! decoration-current dark:decoration-neutral-500",
-        props.class
-    )
-);
+const classes = computed (() => cn (fbLink, props.class));
 </script>
 
 <template>

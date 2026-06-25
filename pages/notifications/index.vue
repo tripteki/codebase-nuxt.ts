@@ -5,7 +5,8 @@ import { useHead, useTranslation, } from "#imports";
 import FooterLayout from "@/components/FooterLayout.vue";
 import HeaderLayout from "@/components/HeaderLayout.vue";
 import NotificationItemPreview from "@/components/admin/NotificationItemPreview.vue";
-import { Button, } from "@/components/ui/button";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import { fbMuted, fbPage, fbSurfacePanel, } from "@/lib/flowbite-classes";
 import {
     type NotificationStatusFilter,
     useNotifications,
@@ -83,38 +84,38 @@ useHead ({
 </script>
 
 <template>
-    <div v-if="canRender" class="min-h-screen flex flex-col bg-background">
+    <div v-if="canRender" :class="fbPage">
         <HeaderLayout show-logout />
 
-        <main class="flex-1 container mx-auto px-4 py-8">
+        <main class="container mx-auto flex-1 px-4 py-8">
             <div class="mx-auto max-w-3xl space-y-6">
                 <div class="flex items-center justify-between gap-4">
                     <div>
                         <h1 class="text-3xl font-bold tracking-tight">
                             {{ t ("notifications") }}
                         </h1>
-                        <p class="text-muted-foreground">
+                        <p :class="fbMuted">
                             {{ t ("notifications_description") }}
                         </p>
                     </div>
-                    <Button variant="outline" @click="markAllAsRead">
+                    <FbButton variant="outline" @click="markAllAsRead">
                         {{ t ("mark_all_read") }}
-                    </Button>
+                    </FbButton>
                 </div>
 
                 <div class="flex gap-2">
-                    <Button
-                        :variant="activeTab === 'all' ? 'default' : 'outline'"
+                    <FbButton
+                        :variant="activeTab === 'all' ? 'primary' : 'outline'"
                         size="sm"
                         @click="
                             activeTab = 'all';
                             currentPage = 1;
                         ">
                         {{ t ("all") }}
-                    </Button>
-                    <Button
+                    </FbButton>
+                    <FbButton
                         :variant="
-                            activeTab === 'unread' ? 'default' : 'outline'
+                            activeTab === 'unread' ? 'primary' : 'outline'
                         "
                         size="sm"
                         @click="
@@ -122,73 +123,80 @@ useHead ({
                             currentPage = 1;
                         ">
                         {{ t ("unread") }}
-                    </Button>
-                    <Button
-                        :variant="activeTab === 'read' ? 'default' : 'outline'"
+                    </FbButton>
+                    <FbButton
+                        :variant="activeTab === 'read' ? 'primary' : 'outline'"
                         size="sm"
                         @click="
                             activeTab = 'read';
                             currentPage = 1;
                         ">
                         {{ t ("read") }}
-                    </Button>
+                    </FbButton>
                 </div>
 
                 <div
                     v-if="isLoading"
-                    class="py-8 text-center text-sm text-muted-foreground">
+                    :class="['py-8 text-center', fbMuted]">
                     {{ t ("loading") }}
                 </div>
 
                 <div
                     v-else-if="items.length === 0"
-                    class="rounded-lg border py-12 text-center text-sm text-muted-foreground">
+                    :class="[
+                        fbSurfacePanel,
+                        'py-12 text-center',
+                        fbMuted,
+                    ]">
                     {{ t ("no_notifications") }}
                 </div>
 
-                <div v-else class="divide-y rounded-lg border">
+                <div v-else :class="[fbSurfacePanel, 'divide-y']">
                     <div
                         v-for="item in items"
                         :key="item.id"
                         class="flex items-start gap-3 px-4 py-4"
-                        :class="{ 'bg-muted/30': notificationIsUnread (item) }">
+                        :class="{
+                            'bg-gray-50 dark:bg-gray-700/30':
+                                notificationIsUnread (item),
+                        }">
                         <button
                             type="button"
                             class="min-w-0 flex-1 text-left"
                             @click="handleClick (item.id)">
                             <NotificationItemPreview :item="item" />
                         </button>
-                        <Button
+                        <FbButton
                             variant="ghost"
                             size="sm"
-                            class="shrink-0 text-destructive"
+                            class="shrink-0 text-red-600 dark:text-red-400"
                             :disabled="actionId === item.id"
                             @click="deleteNotification (item.id)">
                             {{ t ("delete") }}
-                        </Button>
+                        </FbButton>
                     </div>
                 </div>
 
                 <div
                     v-if="meta && (meta.last_page ?? 1) > 1"
                     class="flex items-center justify-center gap-2">
-                    <Button
+                    <FbButton
                         variant="outline"
                         size="sm"
                         :disabled="currentPage <= 1"
                         @click="currentPage -= 1">
                         {{ t ("previous") }}
-                    </Button>
-                    <span class="text-sm text-muted-foreground">
+                    </FbButton>
+                    <span :class="fbMuted">
                         {{ currentPage }} / {{ meta.last_page }}
                     </span>
-                    <Button
+                    <FbButton
                         variant="outline"
                         size="sm"
                         :disabled="currentPage >= (meta.last_page ?? 1)"
                         @click="currentPage += 1">
                         {{ t ("next") }}
-                    </Button>
+                    </FbButton>
                 </div>
             </div>
         </main>

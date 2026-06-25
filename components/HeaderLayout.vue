@@ -4,10 +4,10 @@ import { navigateTo, useAuth, useTranslation, } from "#imports";
 
 import NotificationDropdown from "@/components/admin/NotificationDropdown.vue";
 import AppLogo from "@/components/AppLogo.vue";
+import FbButton from "@/components/flowbite/FbButton.vue";
 import HeaderProfileLink from "@/components/HeaderProfileLink.vue";
 import I18nSwitcher from "@/components/I18nSwitcher.vue";
 import ThemeToggle from "@/components/ThemeToggle.vue";
-import { Button, } from "@/components/ui/button";
 import { useResolvedAuth, } from "@/composables/useResolvedAuth";
 import { unsubscribeWebPush, } from "@/lib/webpush-session";
 import { clearAuthCookies, } from "@/lib/auth-cookies";
@@ -52,9 +52,9 @@ async function handleLogout (): Promise<void> {
 </script>
 
 <template>
-    <header class="border-b">
+    <header class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div
-            class="container mx-auto px-4 py-4 flex justify-between items-center">
+            class="container mx-auto flex items-center justify-between px-4 py-4">
             <div class="flex items-center gap-4">
                 <NuxtLink
                     :to="homeHref"
@@ -70,7 +70,7 @@ async function handleLogout (): Promise<void> {
                 <ClientOnly>
                     <NotificationDropdown v-if="showAccountNav" />
                     <HeaderProfileLink v-if="showAccountNav" />
-                    <Button
+                    <FbButton
                         v-if="isAuthenticated"
                         variant="ghost"
                         size="icon"
@@ -91,31 +91,28 @@ async function handleLogout (): Promise<void> {
                             <polyline points="16 17 21 12 16 7" />
                             <line x1="21" x2="9" y1="12" y2="12" />
                         </svg>
-                    </Button>
-                    <Button
+                    </FbButton>
+                    <FbButton
                         v-else-if="! isLoading"
                         variant="ghost"
                         size="icon"
-                        as-child>
-                        <NuxtLink
-                            to="/admin/auth/login"
-                            :aria-label="tAuth ('log_in')">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="h-5 w-5">
-                                <path
-                                    d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                                <polyline points="10 17 15 12 10 7" />
-                                <line x1="15" x2="3" y1="12" y2="12" />
-                            </svg>
-                        </NuxtLink>
-                    </Button>
+                        to="/admin/auth/login"
+                        :aria-label="tAuth ('log_in')">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="h-5 w-5">
+                            <path
+                                d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                            <polyline points="10 17 15 12 10 7" />
+                            <line x1="15" x2="3" y1="12" y2="12" />
+                        </svg>
+                    </FbButton>
                 </ClientOnly>
             </div>
         </div>

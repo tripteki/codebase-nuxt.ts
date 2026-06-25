@@ -15,7 +15,7 @@ This is the **Nuxt 4** frontend in the Tripteki parallel-codebase family. It mir
 | Server | Nitro (`server/api/` proxies) |
 | Auth | `@sidebase/nuxt-auth` — local provider, Bearer token + refresh |
 | State | Pinia (`stores/`) |
-| UI | Tailwind CSS 3 + shadcn-vue + radix-vue |
+| UI | Tailwind CSS 4 + Flowbite (`@tailwindcss/vite`) |
 | i18n | `@nuxtjs/i18n` 10 — locales `en`, `id`, `ms` |
 | SEO | `@nuxtjs/seo` |
 | PWA | `@vite-pwa/nuxt` — injectManifest mode (`service/sw.ts`) |
@@ -28,9 +28,10 @@ This is the **Nuxt 4** frontend in the Tripteki parallel-codebase family. It mir
 ```
 pages/                  # File-based routes (*.vue)
 components/             # Vue SFCs (PascalCase)
-  ui/                   # shadcn-vue primitives
+  flowbite/             # Fb* wrappers (Button, Input, Label, …)
 composables/            # useX.ts composables
 lib/                    # Shared utilities (singular — NOT libs/)
+  flowbite-classes.ts   # fb* Tailwind class tokens
 stores/                 # Pinia stores
 layouts/                # Layout SFCs
 middleware/             # Route middleware (app-auth.ts)
@@ -124,9 +125,14 @@ npm run postinstall   # nuxt prepare (runs automatically)
 - **Script:** always `<script setup lang="ts">`
 - **Auto-imports:** use `#imports` for Nuxt composables; do not manually import `ref`, `computed`, etc.
 - **Formatting:** match Next.js sibling — Allman braces, spaces inside parentheses
-- **shadcn-vue:** add via `npm run component`
 
-## UI conventions
+## UI conventions (Flowbite)
+
+- **CSS:** `assets/css/main.css` imports Flowbite plugin; brand utilities in `assets/css/brand-theme.css`
+- **Class tokens:** `lib/flowbite-classes.ts` — prefer `fbCard`, `fbMuted`, `fbAlert*` over ad-hoc gray classes
+- **Components:** use `components/flowbite/Fb*.vue`; modals/alerts are custom Vue (Teleport), not Flowbite JS widgets
+- **Plugins:** `FbApexChart`, `FbDataTable`, `FbWysiwyg` + `lib/flowbite-chart-options.ts` for chart defaults
+- **Init:** `plugins/flowbite.client.ts` — `initFlowbite()` on `page:finish` (defensive; most UI is Vue-driven)
 
 - **Header action order:** i18n switcher → theme toggle → notifications → avatar/profile → logout
 - **i18n switcher:** flag emojis (🇺🇸 🇮🇩 🇲🇾), positioned far left in header actions

@@ -3,6 +3,8 @@ import { computed, ref, watch, } from "vue";
 import { useTranslation, } from "#imports";
 
 import NotificationItemPreview from "@/components/admin/NotificationItemPreview.vue";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import { fbLink, fbMuted, fbPopover, } from "@/lib/flowbite-classes";
 import {
     type NotificationStatusFilter,
     useNotifications,
@@ -11,7 +13,6 @@ import {
     notificationIsUnread,
     notificationTargetUrl,
 } from "@/lib/notification-presenter";
-import { Button, } from "@/components/ui/button";
 import { cn, } from "@/lib/utils";
 
 const { t, } = useTranslation ("common");
@@ -81,17 +82,15 @@ async function handleNotificationClick (id: string): Promise<void> {
 
 function tabClass (tab: "all" | "unread" | "read"): string {
     return cn (
-        "inline-flex flex-1 items-center justify-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-        activeTab.value === tab
-            ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:bg-muted"
+        "inline-flex flex-1 items-center justify-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+        activeTab.value === tab ? "tab-brand-active" : "tab-brand-inactive"
     );
 }
 </script>
 
 <template>
     <div class="relative">
-        <Button
+        <FbButton
             type="button"
             variant="ghost"
             size="icon"
@@ -113,29 +112,31 @@ function tabClass (tab: "all" | "unread" | "read"): string {
             </svg>
             <span
                 v-if="unread > 0"
-                class="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                class="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
                 {{ unread > 99 ? "99+" : unread }}
             </span>
-        </Button>
+        </FbButton>
 
         <div
             v-if="open"
-            class="absolute right-0 z-50 mt-2 w-80 rounded-lg border bg-popover text-popover-foreground shadow-lg">
-            <div class="flex items-center justify-between border-b px-4 py-3">
+            :class="['absolute right-0 z-50 mt-2 w-80', fbPopover]">
+            <div
+                class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-600">
                 <h3 class="text-sm font-semibold">
                     {{ t ("notifications") }}
                 </h3>
-                <Button
+                <FbButton
                     v-if="unread > 0"
                     variant="ghost"
                     size="sm"
                     class="h-auto px-2 py-1 text-xs"
                     @click="handleMarkAllAsRead">
                     {{ t ("mark_all_read") }}
-                </Button>
+                </FbButton>
             </div>
 
-            <div class="flex gap-1 border-b px-2 py-2">
+            <div
+                class="flex gap-1 border-b border-gray-200 px-2 py-2 dark:border-gray-600">
                 <button
                     type="button"
                     :class="tabClass ('all')"
@@ -159,29 +160,33 @@ function tabClass (tab: "all" | "unread" | "read"): string {
             <div class="max-h-80 overflow-y-auto">
                 <div
                     v-if="dropdownLoading"
-                    class="px-4 py-6 text-center text-xs text-muted-foreground">
+                    :class="['px-4 py-6 text-center text-xs', fbMuted]">
                     {{ t ("loading") }}
                 </div>
                 <div
                     v-else-if="items.length === 0"
-                    class="px-4 py-6 text-center text-xs text-muted-foreground">
+                    :class="['px-4 py-6 text-center text-xs', fbMuted]">
                     {{ t ("no_notifications") }}
                 </div>
                 <button
                     v-for="item in items"
                     :key="item.id"
                     type="button"
-                    class="flex w-full gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-muted/50"
-                    :class="{ 'bg-muted/30': notificationIsUnread (item) }"
+                    class="flex w-full gap-3 border-b border-gray-200 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700/50"
+                    :class="{
+                        'bg-gray-50 dark:bg-gray-700/30':
+                            notificationIsUnread (item),
+                    }"
                     @click="handleNotificationClick (item.id)">
                     <NotificationItemPreview :item="item" />
                 </button>
             </div>
 
-            <div class="border-t px-4 py-2">
+            <div
+                class="border-t border-gray-200 px-4 py-2 dark:border-gray-600">
                 <NuxtLink
                     to="/notifications"
-                    class="block text-center text-xs text-primary hover:underline"
+                    :class="['block text-center text-xs', fbLink]"
                     @click="open = false">
                     {{ t ("view_all_notifications") }}
                 </NuxtLink>

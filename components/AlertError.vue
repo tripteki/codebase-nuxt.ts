@@ -2,9 +2,9 @@
 import { computed, } from "vue";
 import { useTranslation, } from "#imports";
 
-import { Alert, AlertDescription, AlertTitle, } from "@/components/ui/alert";
+import { fbAlertDanger, } from "@/lib/flowbite-classes";
 
-const props = withDefaults (
+const props = withDefaults(
     defineProps<{
         errors?: string[];
         message?: string;
@@ -35,33 +35,30 @@ const resolvedTitle = computed (() => {
 </script>
 
 <template>
-    <Alert v-if="items.length > 0" variant="destructive" class="mb-4">
+    <div v-if="items.length > 0" :class="fbAlertDanger" role="alert">
         <svg
+            class="me-3 inline h-4 w-4 shrink-0"
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" x2="12" y1="8" y2="12" />
-            <line x1="12" x2="12.01" y1="16" y2="16" />
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
         </svg>
-        <AlertTitle v-if="resolvedTitle">
-            {{ resolvedTitle }}
-        </AlertTitle>
-        <AlertDescription>
+        <div>
+            <span v-if="resolvedTitle" class="font-medium">
+                {{ resolvedTitle }}
+            </span>
             <p v-if="items.length === 1">
                 {{ items[0] }}
             </p>
-            <ul v-else class="list-inside list-disc text-sm">
+            <ul v-else class="mt-1.5 list-inside list-disc">
                 <li
                     v-for="(error, index) in Array.from (new Set (items))"
                     :key="index">
                     {{ error }}
                 </li>
             </ul>
-        </AlertDescription>
-    </Alert>
+        </div>
+    </div>
 </template>

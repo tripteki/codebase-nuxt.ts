@@ -31,6 +31,7 @@ const { isAuthenticated } = useAuthGuard();
 | `HeaderProfileLink.vue` | Avatar → profile link |
 | `ThemeToggle.vue` | Dark/light mode switch |
 | `AppLogo.vue` | Manifest PNG logo |
+| `FbButton.vue` / `FbInput.vue` / … | Flowbite-styled primitives in `components/flowbite/` |
 
 ## Composables
 

@@ -4,9 +4,10 @@ import { useTranslation, } from "#imports";
 
 import AlertError from "@/components/AlertError.vue";
 import AlertSuccess from "@/components/AlertSuccess.vue";
-import { Alert, } from "@/components/ui/alert";
-import { Button, } from "@/components/ui/button";
-import { Spinner, } from "@/components/ui/spinner";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
+import { fbMuted, fbSurfacePanel, } from "@/lib/flowbite-classes";
+import { cn, } from "@/lib/utils";
 
 const { data, } = useAuth ();
 const { t, } = useTranslation ("auth");
@@ -47,27 +48,32 @@ async function resend (): Promise<void> {
 
 <template>
     <div v-if="isUnverified" class="space-y-3">
-        <Alert
-            class="mb-0 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-muted-foreground">
+        <div
+            :class="
+                cn (
+                    fbSurfacePanel,
+                    'mb-0 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between'
+                )
+            ">
+            <p :class="fbMuted">
                 {{ t ("email_not_verified_message") }}
             </p>
 
-            <Button
+            <FbButton
                 type="button"
                 variant="outline"
                 size="sm"
                 class="shrink-0"
                 :disabled="processing"
                 @click="resend">
-                <Spinner v-if="processing" />
+                <FbSpinner v-if="processing" class="h-4 w-4" />
                 {{
                     processing
                         ? t ("resending_verification_email")
                         : t ("resend_verification_email")
                 }}
-            </Button>
-        </Alert>
+            </FbButton>
+        </div>
 
         <AlertSuccess :message="successMessage || undefined" />
         <AlertError :message="errorMessage || undefined" />

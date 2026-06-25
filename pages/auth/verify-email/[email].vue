@@ -11,8 +11,9 @@ import {
 import { shouldRedirectVerifyEmailError, } from "@/lib/api-error-matchers";
 import AuthLayout from "@/components/AuthLayout.vue";
 import TextLink from "@/components/TextLink.vue";
-import { Button, } from "@/components/ui/button";
-import { Spinner, } from "@/components/ui/spinner";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
+import { fbAlertSuccess, fbMuted, } from "@/lib/flowbite-classes";
 import { definePagePublic, } from "@/lib/define-page-auth";
 
 definePageMeta ({
@@ -105,25 +106,25 @@ onMounted (async (): Promise<void> => {
             <div
                 v-if="status === 'verifying'"
                 class="flex flex-col items-center gap-4">
-                <Spinner class="h-8 w-8" />
-                <p class="text-center text-sm text-muted-foreground">
+                <FbSpinner class="h-8 w-8" />
+                <p :class="['text-center', fbMuted]">
                     {{ t ("verifying_email") }}
                 </p>
             </div>
 
             <div v-else-if="status === 'success'" class="space-y-4">
-                <div class="rounded-lg bg-success-muted p-4 text-center">
-                    <p class="text-sm font-medium text-success-foreground">
+                <div :class="[fbAlertSuccess, 'text-center']">
+                    <p class="font-medium">
                         {{ message }}
                     </p>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <Button
+                    <FbButton
                         class="w-full"
-                        @click="navigateTo ('/admin/auth/login')">
+                        to="/admin/auth/login">
                         {{ t ("log_in") }}
-                    </Button>
+                    </FbButton>
 
                     <TextLink to="/" class="text-center text-sm">
                         {{ t ("go_to_home") }}
@@ -133,7 +134,7 @@ onMounted (async (): Promise<void> => {
 
             <div v-else class="space-y-4">
                 <div
-                    class="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-center">
+                    class="rounded-lg bg-red-50 p-4 text-center dark:bg-red-900/20">
                     <p
                         class="text-sm font-medium text-red-800 dark:text-red-200">
                         {{ message }}
@@ -141,12 +142,12 @@ onMounted (async (): Promise<void> => {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <Button
+                    <FbButton
                         variant="outline"
                         class="w-full"
-                        @click="navigateTo ('/admin/auth/login')">
+                        to="/admin/auth/login">
                         {{ t ("go_to_login") }}
-                    </Button>
+                    </FbButton>
 
                     <TextLink
                         to="/admin/auth/register"

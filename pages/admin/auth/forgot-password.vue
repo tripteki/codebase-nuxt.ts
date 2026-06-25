@@ -13,10 +13,10 @@ import AuthLayout from "@/components/AuthLayout.vue";
 import AlertError from "@/components/AlertError.vue";
 import AlertSuccess from "@/components/AlertSuccess.vue";
 import TextLink from "@/components/TextLink.vue";
-import { Button, } from "@/components/ui/button";
-import { Input, } from "@/components/ui/input";
-import { Label, } from "@/components/ui/label";
-import { Spinner, } from "@/components/ui/spinner";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbInput from "@/components/flowbite/FbInput.vue";
+import FbLabel from "@/components/flowbite/FbLabel.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
 import { parseApiErrors, } from "@/lib/parse-api-errors";
 import type { ForgotPasswordProps } from "@/types/admin/auth";
 import { useRequireGuest, } from "@/composables/useAuthGuard";
@@ -97,35 +97,36 @@ async function submit (event: Event): Promise<void> {
                 <AlertError :message="errors.general" />
 
                 <div class="grid gap-2">
-                    <Label html-for="email">{{ t ("email_address") }}</Label>
-                    <Input
+                    <FbLabel html-for="email">{{ t ("email_address") }}</FbLabel>
+                    <FbInput
                         id="email"
                         v-model="data.email"
                         type="email"
                         name="email"
                         autocomplete="off"
                         autofocus
-                        :placeholder="t ('email_placeholder')" />
+                        :placeholder="t ('email_placeholder')"
+                        :invalid="!! errors.email" />
                     <InputError :message="errors.email" />
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
-                    <Button
+                    <FbButton
                         type="submit"
                         class="w-full"
                         :disabled="processing"
                         data-test="email-password-reset-link-button">
-                        <Spinner v-if="processing" />
+                        <FbSpinner v-if="processing" />
                         {{
                             processing
                                 ? t ("sending")
                                 : t ("email_password_reset_link")
                         }}
-                    </Button>
+                    </FbButton>
                 </div>
             </form>
 
-            <div class="space-x-1 text-center text-sm text-muted-foreground">
+            <div class="space-x-1 text-center text-sm text-gray-500 dark:text-gray-400">
                 <span>{{ t ("or_return_to") }}</span>
                 <TextLink to="/admin/auth/login">
                     {{ t ("log_in_lower") }}

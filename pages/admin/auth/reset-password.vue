@@ -11,15 +11,14 @@ import {
 import InputError from "@/components/InputError.vue";
 import AuthLayout from "@/components/AuthLayout.vue";
 import AlertError from "@/components/AlertError.vue";
-import { Button, } from "@/components/ui/button";
-import { Input, } from "@/components/ui/input";
-import { Label, } from "@/components/ui/label";
-import { Spinner, } from "@/components/ui/spinner";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import FbInput from "@/components/flowbite/FbInput.vue";
+import FbLabel from "@/components/flowbite/FbLabel.vue";
+import FbSpinner from "@/components/flowbite/FbSpinner.vue";
 import {
     parseApiErrors,
     focusPasswordMatchError,
 } from "@/lib/parse-api-errors";
-import { cn, } from "@/lib/utils";
 import { definePagePublic, } from "@/lib/define-page-auth";
 
 definePageMeta ({
@@ -101,9 +100,9 @@ async function submit (event: Event): Promise<void> {
             <AlertError :message="errors.general" />
 
             <div class="grid gap-6">
-                <div>
-                    <Label for="email">{{ t ("email") }}</Label>
-                    <Input
+                <div class="grid gap-2">
+                    <FbLabel html-for="email">{{ t ("email") }}</FbLabel>
+                    <FbInput
                         id="email"
                         type="email"
                         name="email"
@@ -113,9 +112,9 @@ async function submit (event: Event): Promise<void> {
                     <InputError :message="errors.email" />
                 </div>
 
-                <div>
-                    <Label for="password">{{ t ("password") }}</Label>
-                    <Input
+                <div class="grid gap-2">
+                    <FbLabel html-for="password">{{ t ("password") }}</FbLabel>
+                    <FbInput
                         id="password"
                         v-model="data.password"
                         type="password"
@@ -123,45 +122,33 @@ async function submit (event: Event): Promise<void> {
                         autocomplete="new-password"
                         autofocus
                         :placeholder="t ('password_placeholder')"
-                        :aria-invalid="!! errors.password"
-                        :class="
-                            cn (
-                                errors.password &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! errors.password" />
                     <InputError :message="errors.password" />
                 </div>
 
-                <div>
-                    <Label for="password_confirmation">
+                <div class="grid gap-2">
+                    <FbLabel html-for="password_confirmation">
                         {{ t ("password_confirmation_label") }}
-                    </Label>
-                    <Input
+                    </FbLabel>
+                    <FbInput
                         id="password_confirmation"
                         v-model="data.password_confirmation"
                         type="password"
                         name="password_confirmation"
                         autocomplete="new-password"
                         :placeholder="t ('password_confirmation_placeholder')"
-                        :aria-invalid="!! errors.password_confirmation"
-                        :class="
-                            cn (
-                                errors.password_confirmation &&
-                                    'border-destructive focus-visible:ring-destructive/30'
-                            )
-                        " />
+                        :invalid="!! errors.password_confirmation" />
                     <InputError :message="errors.password_confirmation" />
                 </div>
 
-                <Button
+                <FbButton
                     type="submit"
                     class="mt-2 w-full gap-2"
                     :disabled="processing"
                     data-test="reset-password-button">
-                    <Spinner v-if="processing" />
+                    <FbSpinner v-if="processing" />
                     {{ processing ? t ("resetting") : t ("reset_password") }}
-                </Button>
+                </FbButton>
             </div>
         </form>
     </AuthLayout>

@@ -9,7 +9,8 @@ import {
 
 import FooterLayout from "@/components/FooterLayout.vue";
 import HeaderLayout from "@/components/HeaderLayout.vue";
-import { Button, } from "@/components/ui/button";
+import FbButton from "@/components/flowbite/FbButton.vue";
+import { fbMuted, fbPage, } from "@/lib/flowbite-classes";
 import { resolveApiDocsUrl, } from "@/lib/api-base";
 import { definePagePublic, } from "@/lib/define-page-auth";
 
@@ -35,37 +36,35 @@ useHead ({
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col bg-background">
+    <div :class="fbPage">
         <HeaderLayout />
 
-        <main class="flex-1 flex items-center justify-center px-4 py-16">
-            <div class="text-center space-y-8 max-w-2xl">
+        <main class="flex flex-1 items-center justify-center px-4 py-16">
+            <div class="max-w-2xl space-y-8 text-center">
                 <div class="space-y-4">
                     <h2 class="text-4xl font-bold tracking-tight sm:text-5xl">
                         {{ t ("title") }}
                         <br />
-                        <span class="text-primary">{{ t ("subtitle") }}</span>
+                        <span class="text-[var(--brand-primary)]">{{
+                            t ("subtitle")
+                        }}</span>
                     </h2>
 
-                    <p class="text-xl text-muted-foreground">
+                    <p :class="['text-xl', fbMuted]">
                         {{ t ("description") }}
                     </p>
                 </div>
 
-                <div class="flex gap-4 justify-center">
-                    <Button size="lg" as-child>
-                        <NuxtLink to="/admin/auth/login">
-                            {{ t ("get_started") }}
-                        </NuxtLink>
-                    </Button>
-                    <Button variant="outline" size="lg" as-child>
-                        <a
-                            :href="apiDocsUrl"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            {{ t ("view_docs") }}
-                        </a>
-                    </Button>
+                <div class="flex justify-center gap-4">
+                    <FbButton size="lg" to="/admin/auth/login">
+                        {{ t ("get_started") }}
+                    </FbButton>
+                    <FbButton
+                        variant="outline"
+                        size="lg"
+                        :href="apiDocsUrl">
+                        {{ t ("view_docs") }}
+                    </FbButton>
                 </div>
             </div>
         </main>

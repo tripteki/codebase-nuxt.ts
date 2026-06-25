@@ -16,14 +16,14 @@ const appLabel = computed (() => {
 <template>
     <div
         v-if="visible"
-        class="pwa-install fixed bottom-4 right-4 z-[100] max-w-[min(100vw-1.5rem,18rem)] rounded-2xl border border-border bg-background/95 p-2 shadow-lg backdrop-blur-md max-sm:bottom-3 max-sm:right-3"
+        class="pwa-install fixed bottom-4 right-4 z-[100] max-w-[min(100vw-1.5rem,18rem)] rounded-2xl border border-gray-200 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-gray-700 dark:bg-gray-900/95 max-sm:bottom-3 max-sm:right-3"
         role="region"
         :aria-label="t ('pwa_install')">
         <div class="flex items-start gap-2">
             <div
-                class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-muted">
+                class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-700">
                 <AppLogoIcon
-                    class="size-9 fill-current text-foreground"
+                    class="size-9 fill-current text-gray-900 dark:text-white"
                     aria-hidden="true" />
             </div>
 
@@ -32,14 +32,14 @@ const appLabel = computed (() => {
                     {{ appLabel }}
                 </p>
                 <p
-                    class="mt-0.5 text-[10px] leading-snug text-muted-foreground">
+                    class="mt-0.5 text-[10px] leading-snug text-gray-500 dark:text-gray-400">
                     {{ t ("pwa_install_hint") }}
                 </p>
             </div>
 
             <button
                 type="button"
-                class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 :aria-label="t ('close')"
                 @click="dismiss">
                 <svg
@@ -60,7 +60,7 @@ const appLabel = computed (() => {
 
         <button
             type="button"
-            class="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            class="btn-brand-primary mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             :disabled="isInstalling"
             @click="install">
             <svg

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTranslation, } from "#imports";
 
-import { Button, } from "@/components/ui/button";
+import FbButton from "@/components/flowbite/FbButton.vue";
 import { useWebPush, } from "@/composables/useWebPush";
 
 withDefaults (
@@ -37,13 +37,13 @@ const { showBanner, isSubscribing, dismissBanner, requestPermission, } =
             </div>
 
             <div class="flex shrink-0 items-center gap-2">
-                <Button
+                <FbButton
                     type="button"
                     size="sm"
                     :disabled="isSubscribing"
                     @click="requestPermission">
                     {{ t ("webpush_enable_button") }}
-                </Button>
+                </FbButton>
 
                 <button
                     type="button"
