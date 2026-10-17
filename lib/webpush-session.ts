@@ -1,3 +1,5 @@
+import { authorizationHeader, } from "@/lib/access-token";
+
 export async function unsubscribeWebPush (
     accessToken?: string | null
 ): Promise<void> {
@@ -20,7 +22,7 @@ export async function unsubscribeWebPush (
         await fetch ("/api/webpush/unsubscribe", {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: authorizationHeader (accessToken),
                 "Content-Type": "application/json",
             },
             body: JSON.stringify (subscription.toJSON ()),

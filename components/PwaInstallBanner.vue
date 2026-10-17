@@ -1,45 +1,56 @@
 <script setup lang="ts">
-import AppLogoIcon from "@/components/AppLogoIcon.vue";
+import { onUnmounted, watch, } from "vue";
+
+import { useAdminSidebar, } from "@/composables/useAdminSidebar";
 import { usePwaInstall, } from "@/composables/usePwaInstall";
+import { formatAppName, } from "@/lib/app-name";
 
 const config = useRuntimeConfig ();
 const { t, } = useTranslation ("common");
+const { open, } = useAdminSidebar ();
 const { visible, isInstalling, dismiss, install, } = usePwaInstall ();
 
-const appLabel = computed (() => {
-    const name = String (config.public.appName ?? "App");
+watch ([visible, open], ([isVisible, isSidebarOpen]) => {
+    document.documentElement.classList.toggle ("pwa-install-open", isVisible && ! isSidebarOpen);
+}, { immediate: true, });
 
-    return name.charAt (0).toUpperCase () + name.slice (1);
+onUnmounted (() => {
+    document.documentElement.classList.remove ("pwa-install-open");
 });
+
+const appLabel = computed (() => formatAppName (String (config.public.appName ?? "App")));
 </script>
 
 <template>
     <div
-        v-if="visible"
-        class="pwa-install fixed bottom-4 right-4 z-[100] max-w-[min(100vw-1.5rem,18rem)] rounded-2xl border border-gray-200 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-gray-700 dark:bg-gray-900/95 max-sm:bottom-3 max-sm:right-3"
+        v-if="visible && ! open"
+        class="pwa-install pointer-events-auto absolute bottom-4 end-4 w-56 rounded-2xl border border-gray-200/90 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-gray-600/90 dark:bg-gray-900/95"
         role="region"
         :aria-label="t ('pwa_install')">
-        <div class="flex items-start gap-2">
-            <div
-                class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-700">
-                <AppLogoIcon
-                    class="size-9 fill-current text-gray-900 dark:text-white"
-                    aria-hidden="true" />
+        <div class="flex items-center gap-2">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800">
+                <img
+                    src="/manifest/asset/logo.png"
+                    :alt="appLabel"
+                    class="block h-10 w-10 object-contain"
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async">
             </div>
 
-            <div class="min-w-0 flex-1 pt-0.5">
+            <div class="min-w-0 flex-1">
                 <p class="truncate text-xs font-semibold leading-tight">
                     {{ appLabel }}
                 </p>
-                <p
-                    class="mt-0.5 text-[10px] leading-snug text-gray-500 dark:text-gray-400">
+                <p class="mt-0.5 text-[10px] leading-snug text-gray-500 dark:text-gray-400">
                     {{ t ("pwa_install_hint") }}
                 </p>
             </div>
 
             <button
                 type="button"
-                class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                 :aria-label="t ('close')"
                 @click="dismiss">
                 <svg
@@ -60,7 +71,7 @@ const appLabel = computed (() => {
 
         <button
             type="button"
-            class="btn-brand-primary mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            class="btn-brand-primary mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border-0 px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             :disabled="isInstalling"
             @click="install">
             <svg

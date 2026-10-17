@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, } from "vue";
+import { computed, ref, } from "vue";
+import { useTranslation, } from "#imports";
 
 import {
     fbInput,
@@ -69,6 +70,16 @@ const emit = defineEmits<{
     "update:modelValue": [value: string];
 }>();
 
+const { t, } = useTranslation ("common");
+const visible = ref (false);
+const inputType = computed (() =>
+    props.type === "password" && visible.value ? "text" : props.type
+);
+
+function toggleVisible (): void {
+    visible.value = ! visible.value;
+}
+
 const resolvedIcon = computed(() =>
     resolveFbInputIcon({
         icon: props.icon,
@@ -83,6 +94,7 @@ const classes = computed(() =>
         fbInput,
         resolvedIcon.value && fbInputWithIcon,
         props.invalid && fbInputError,
+        props.type === "password" && "pe-12",
         props.disabled && "cursor-not-allowed opacity-60 dark:opacity-60",
         props.class
     )
@@ -140,7 +152,7 @@ const classes = computed(() =>
 
         <input
             :id="id"
-            :type="type"
+            :type="inputType"
             :name="name"
             :value="modelValue"
             :placeholder="placeholder"
@@ -158,5 +170,23 @@ const classes = computed(() =>
                     ($event.target as HTMLInputElement).value
                 )
             " >
+        <button
+            v-if="type === 'password'"
+            type="button"
+            data-test="password-toggle"
+            class="absolute inset-y-0 end-0 flex items-center pe-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            :aria-label="visible ? t ('hide_password') : t ('show_password')"
+            :aria-pressed="visible"
+            @click="toggleVisible">
+            <svg v-if="! visible" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 10.5a2 2 0 0 0 2.9 2.9" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.9 5.2A10.8 10.8 0 0 1 12 5c4.5 0 8.3 2.9 9.5 7a11 11 0 0 1-4.2 5.2M6.2 6.2A11 11 0 0 0 2.5 12c1.2 4.1 5 7 9.5 7 1.6 0 3.1-.4 4.4-1" />
+            </svg>
+        </button>
     </div>
 </template>

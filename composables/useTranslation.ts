@@ -1,6 +1,6 @@
 type TranslationNamespace = "auth" | "common";
 
-type ScopedTranslation = (key: string) => string;
+type ScopedTranslation = (key: string, params?: Record<string, unknown>) => string;
 
 export function useTranslation (namespace: TranslationNamespace): {
     t: ScopedTranslation;
@@ -8,8 +8,8 @@ export function useTranslation (namespace: TranslationNamespace): {
 } {
     const { t: translate, locale, } = useI18n ();
 
-    const t: ScopedTranslation = (key: string): string =>
-        translate (`${namespace}.${key}`);
+    const t: ScopedTranslation = (key: string, params?: Record<string, unknown>): string =>
+        translate (`${namespace}.${key}`, params ?? {});
 
     return { t, locale };
 }

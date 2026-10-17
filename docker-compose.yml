@@ -1,0 +1,35 @@
+name: codebase-nuxt
+
+services:
+  nuxt:
+    image: codebase-nuxt:latest
+    build:
+      context: .
+      args:
+        NUXT_PUBLIC_APP_NAME: ${NUXT_PUBLIC_APP_NAME:-codebase}
+        NUXT_PUBLIC_APP_URL: ${NUXT_PUBLIC_APP_URL:-http://localhost:3000}
+        NUXT_PUBLIC_BASE_URL: ${NUXT_PUBLIC_BASE_URL:-http://api.backend.localhost/api}
+        NUXT_PUBLIC_AUTH_URL: ${NUXT_PUBLIC_AUTH_URL:-http://api.backend.localhost/api/v1/auth}
+        NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL:-http://api.backend.localhost}
+        NUXT_PUBLIC_REALTIME_DRIVER: ${NUXT_PUBLIC_REALTIME_DRIVER:-socketio}
+        NUXT_PUBLIC_REVERB_APP_KEY: ${NUXT_PUBLIC_REVERB_APP_KEY:-}
+        NUXT_PUBLIC_REVERB_HOST: ${NUXT_PUBLIC_REVERB_HOST:-127.0.0.1}
+        NUXT_PUBLIC_REVERB_PORT: ${NUXT_PUBLIC_REVERB_PORT:-8080}
+        NUXT_PUBLIC_REVERB_SCHEME: ${NUXT_PUBLIC_REVERB_SCHEME:-http}
+        NUXT_PUBLIC_VAPID_PUBLIC_KEY: ${NUXT_PUBLIC_VAPID_PUBLIC_KEY:-}
+        NUXT_PUBLIC_APP_ENV: ${NUXT_PUBLIC_APP_ENV:-production}
+        NUXT_PUBLIC_APP_LANG: ${NUXT_PUBLIC_APP_LANG:-en}
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      NUXT_SECRET: ${SECRET:-}
+    ports:
+      - "${PORT:-3000}:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "api.backend.localhost:host-gateway"
+    init: true
+    restart: unless-stopped

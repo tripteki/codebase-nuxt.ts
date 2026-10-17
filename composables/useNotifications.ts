@@ -61,7 +61,7 @@ export function useNotifications () {
         ]);
 
         const result = await call ({
-            url: "/api/v1/notifications",
+            url: "/api/v1/notifications/",
             method: "GET",
             params,
         });
@@ -112,6 +112,21 @@ export function useNotifications () {
         return true;
     }
 
+    async function deleteAll (): Promise<boolean> {
+        const result = await call ({
+            url: "/api/v1/notifications/delete-all",
+            method: "DELETE",
+        });
+
+        if (! result.isSuccess) {
+            return false;
+        }
+
+        await refresh ();
+
+        return true;
+    }
+
     async function deleteNotification (id: string): Promise<boolean> {
         const success = await runWithActionId (actionId, id, async () => {
             const result = await call ({
@@ -145,6 +160,7 @@ export function useNotifications () {
         markAsRead,
         markAllAsRead,
         deleteNotification,
+        deleteAll,
         refresh,
     };
 }

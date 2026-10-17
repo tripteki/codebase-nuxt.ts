@@ -1,14 +1,14 @@
+import { formatAppName, } from "@/lib/app-name";
 import { createPwaManifest, } from "@/lib/pwa-manifest";
 
 export default defineEventHandler ((event) => {
     const config = useRuntimeConfig ();
-    const appName = String (config.public.appName ?? "App");
-    const formattedName = appName.charAt (0).toUpperCase () + appName.slice (1);
+    const formattedName = formatAppName (String (config.public.appName ?? "App"));
 
     const manifest = createPwaManifest ({
         name: formattedName,
-        shortName: appName,
-        description: `The ${appName} WebApp!`,
+        shortName: formattedName,
+        description: `The ${formattedName} WebApp!`,
     });
 
     setHeader (

@@ -5,7 +5,22 @@ alwaysApply: true
 
 # Nuxt — Project Conventions
 
-This is the **Nuxt 4** frontend in the Tripteki parallel-codebase family. It mirrors the Next.js app in features and API contract but uses Vue 3 + Pinia + `@sidebase/nuxt-auth`.
+This is the **Nuxt 4** frontend in the Tripteki parallel-codebase family. It mirrors the Next.js app and talks to FastAPI or Nest through one REST contract. The product brand is **Codebase**.
+
+## Family conventions
+
+| Topic | Rule |
+|-------|------|
+| Roles | Exactly `superadmin`, `admin`, `user` |
+| Brand | Primary `#2563eb`, secondary `#84cc16`, tertiary `#1e3a8a` |
+| CSS | `--brand-primary`, `--brand-secondary`, `--brand-tertiary` in `assets/css/brand-theme.css` |
+| Runtime | `lib/branding.ts`. Optional `NUXT_PUBLIC_BRAND_*` hex overrides |
+| Locales | `en`, `id`, `ms` |
+| Auth pages | `/auth/login`, `/auth/register`, `/auth/forgot-password`, `/auth/reset-password` |
+| Legacy auth | `/admin/auth/**` redirects to `/auth/**` |
+| Format | Indent 4, double quotes, trailing commas, space before `(`, K&R braces |
+| Docs | No JSDoc on `lib/` or composables |
+| Validation | HTTP 422 `{ detail: [{ loc, msg, type }] }`. Nest string errors are parsed too |
 
 ## Stack
 
@@ -79,7 +94,7 @@ definePageAuthed();
 ```typescript
 import { clearAuthCookies } from "@/lib/auth-cookies";
 clearAuthCookies();  // Must run before/at signOut
-await signOut({ callbackUrl: "/admin/auth/login" });
+await signOut ({ callbackUrl: "/auth/login", });
 ```
 
 ## Environment variables
@@ -100,9 +115,7 @@ await signOut({ callbackUrl: "/admin/auth/login" });
 
 ## Route rules & aliases
 
-Configured in `nuxt.config.ts` `routeRules`:
-- `/auth/login` → redirects to `/admin/auth/login`
-- Similar aliases for register, forgot-password, etc.
+Canonical guest pages live under `pages/auth/`. `nuxt.config.ts` `routeRules` sends `/admin/auth/**` to `/auth/**`. Sidebase `pages.login` is `/auth/login`. Signed links stay at `/auth/reset-password/[email]` and `/auth/verify-email/[email]`. The reset form is `pages/auth/reset-password/index.vue` so it is not a parent of the signed page.
 
 ## Static export
 
@@ -124,7 +137,8 @@ npm run postinstall   # nuxt prepare (runs automatically)
 - **Composables:** camelCase `useX.ts` (`useAuthGuard.ts`, `useNotifications.ts`)
 - **Script:** always `<script setup lang="ts">`
 - **Auto-imports:** use `#imports` for Nuxt composables; do not manually import `ref`, `computed`, etc.
-- **Formatting:** match Next.js sibling — Allman braces, spaces inside parentheses
+- **Formatting:** K&R braces, indent 4, double quotes, trailing commas, space before `(`
+- **Example:** `export function useRequireAuth (redirectTo = "/auth/login")`
 
 ## UI conventions (Flowbite)
 

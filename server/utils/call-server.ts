@@ -1,5 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, } from "axios";
 
+import { authorizationHeader, } from "@/lib/access-token";
+
 type Detail =
 {
     baseUrl?: string;
@@ -34,11 +36,13 @@ export const callServer = async (
 
     try
     {
+        const authorization = authorizationHeader (token);
+
         const instance: AxiosInstance = axios.create ({
             baseURL,
             headers: {
                 "Content-Type": "application/json",
-                ... (token ? { Authorization: `Bearer ${token}`, } : {}),
+                ... (authorization ? { Authorization: authorization, } : {}),
                 ... (detail.headers || {}),
             },
         });

@@ -18,6 +18,7 @@ const { isAuthenticated } = useAuthGuard();
 ```
 
 - **Options API:** do not use for new code
+- **Format:** K&R braces, indent 4, double quotes, trailing commas, space before `(`. No JSDoc on `lib/` or composables
 - Explicit `.vue` extension on imports: `import HeaderLayout from "@/components/HeaderLayout.vue"`
 - Colocate page-specific components; shared ones in `components/`
 

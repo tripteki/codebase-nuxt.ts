@@ -4,6 +4,6 @@ export default defineNuxtRouteMiddleware ((to) =>
 
     if (! email)
     {
-        return navigateTo ("/admin/auth/login");
+        return navigateTo ("/auth/login");
     }
 });

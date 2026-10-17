@@ -4,6 +4,8 @@ import axios, {
     type AxiosResponse,
 } from "axios";
 
+import { authorizationHeader, } from "@/lib/access-token";
+
 type Detail = {
     baseUrl?: string;
     url: string;
@@ -38,13 +40,12 @@ export const createCall =
 
         try {
             const accessToken = getToken () ?? "";
+            const authorization = authorizationHeader (accessToken);
 
             const instance: AxiosInstance = axios.create ({
                 baseURL,
                 headers: {
-                    ...(accessToken
-                        ? { Authorization: `Bearer ${accessToken}` }
-                        : {}),
+                    ...(authorization ? { Authorization: authorization, } : {}),
                     ...(detail.headers || {}),
                 },
             });

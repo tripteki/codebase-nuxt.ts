@@ -1,3 +1,9 @@
+export const LOCALE_SWITCHER_LABELS: Record<string, string> = {
+    en: "United States",
+    id: "Indonesia",
+    ms: "Malaysia",
+};
+
 export const LOCALE_FLAGS: Record<string, string> = {
     en: "🇺🇸",
     id: "🇮🇩",

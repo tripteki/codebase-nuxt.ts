@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref, } from "vue";
 import { useTranslation, } from "#imports";
 
+import AdminFilePicker from "@/components/admin/AdminFilePicker.vue";
+import AdminFormSkeleton from "@/components/admin/AdminFormSkeleton.vue";
 import AlertError from "@/components/AlertError.vue";
 import AlertSuccess from "@/components/AlertSuccess.vue";
 import InputError from "@/components/InputError.vue";
@@ -10,7 +12,8 @@ import FbButton from "@/components/flowbite/FbButton.vue";
 import FbInput from "@/components/flowbite/FbInput.vue";
 import FbLabel from "@/components/flowbite/FbLabel.vue";
 import FbSpinner from "@/components/flowbite/FbSpinner.vue";
-import { fbInput, fbMuted, } from "@/lib/flowbite-classes";
+import { adminSectionClass, adminSectionFooterClass, } from "@/lib/admin-form-classes";
+import { fbInput, } from "@/lib/flowbite-classes";
 import { useUserProfile, } from "@/composables/useUserProfile";
 import { actionErrors, } from "@/lib/admin-action";
 import type { UserMeDto } from "@/types/admin/settings";
@@ -51,9 +54,7 @@ function applyUser (user: UserMeDto): void {
     avatarPreview.value = null;
 }
 
-function onAvatarChange (event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
+function onAvatarChange (file: File | null): void {
     avatarFile.value = file;
 
     if (avatarPreview.value) {
@@ -116,13 +117,18 @@ async function handleSubmit (): Promise<void> {
         return;
     }
 
+    const requestedEmail = form.email.trim ();
+    const currentEmail = (result.data?.email ?? form.email).trim ();
+
     if (result.data) {
         applyUser (result.data);
     }
 
     form.password = "";
     form.password_confirmation = "";
-    successMessage.value = t ("settings_personal_updated");
+    successMessage.value = requestedEmail.toLowerCase () !== currentEmail.toLowerCase ()
+        ? t ("settings_email_pending")
+        : t ("settings_personal_updated");
 }
 
 onMounted (() => {
@@ -136,40 +142,39 @@ onMounted (() => {
 
         <AlertSuccess :message="successMessage || undefined" />
 
-        <div
-            v-if="isLoading"
-            :class="['flex items-center gap-2', fbMuted]">
-            <FbSpinner class="h-4 w-4" />
-            {{ t ("loading") }}
-        </div>
+        <AdminFormSkeleton v-if="isLoading" :fields="6" />
 
         <template v-else>
             <WebPushEnableSettings />
 
-            <div class="space-y-2">
-                <FbLabel html-for="avatar">{{ t ("avatar") }}</FbLabel>
-                <div class="flex items-center gap-4">
-                    <div
-                        class="size-20 shrink-0 overflow-hidden rounded-full border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-700">
+            <div :class="adminSectionClass">
+                <div class="flex min-w-0 flex-col items-center gap-4 text-center">
+                    <div class="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-700">
                         <img
                             v-if="avatarPreview || currentAvatarUrl"
-                            :src="
-                                avatarPreview || currentAvatarUrl || undefined
-                            "
+                            :src="avatarPreview || currentAvatarUrl || undefined"
                             alt=""
-                            class="h-full w-full object-cover" />
+                            class="h-full w-full object-cover">
+                        <div v-else class="flex h-full w-full items-center justify-center text-gray-400">
+                            <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
                     </div>
-                    <input
-                        id="avatar"
-                        type="file"
-                        accept="image/*"
-                        :class="fbInput"
-                        @change="onAvatarChange" />
+                    <div class="w-full max-w-xs space-y-2">
+                        <FbLabel html-for="avatar">{{ t ("avatar") }}</FbLabel>
+                        <AdminFilePicker
+                            id="avatar"
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            :model-value="avatarFile"
+                            :invalid="!! errors.avatar"
+                            @update:model-value="onAvatarChange" />
+                        <InputError :message="errors.avatar" />
+                    </div>
                 </div>
-                <InputError :message="errors.avatar" />
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2">
+            <div :class="[adminSectionClass, 'grid gap-6 md:grid-cols-2',]">
                 <div class="space-y-2">
                     <FbLabel html-for="name">{{ t ("name") }}</FbLabel>
                     <FbInput
@@ -177,6 +182,7 @@ onMounted (() => {
                         v-model="form.name"
                         name="name"
                         required
+                        :placeholder="t ('name_placeholder')"
                         :invalid="!! errors.name" />
                     <InputError :message="errors.name" />
                 </div>
@@ -189,6 +195,7 @@ onMounted (() => {
                         type="email"
                         name="email"
                         required
+                        :placeholder="t ('email_placeholder')"
                         :invalid="!! errors.email" />
                     <InputError :message="errors.email" />
                 </div>
@@ -199,12 +206,13 @@ onMounted (() => {
                         id="full_name"
                         v-model="form.full_name"
                         name="full_name"
+                        :placeholder="t ('full_name_placeholder')"
                         :invalid="!! errors.full_name" />
                     <InputError :message="errors.full_name" />
                 </div>
             </div>
 
-            <div class="space-y-2">
+            <div :class="[adminSectionClass, 'space-y-2',]">
                 <FbLabel>{{ t ("interests") }}</FbLabel>
                 <div class="flex flex-wrap gap-2">
                     <span
@@ -226,6 +234,7 @@ onMounted (() => {
                         type="text"
                         :class="fbInput"
                         :placeholder="t ('add_interest')"
+                        list="interest-suggestions"
                         @keydown.enter.prevent="addInterest ()" />
                     <FbButton
                         type="button"
@@ -242,7 +251,7 @@ onMounted (() => {
                 </datalist>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2">
+            <div :class="[adminSectionClass, 'grid gap-6 md:grid-cols-2',]">
                 <div class="space-y-2">
                     <FbLabel html-for="password">{{ t ("new_password") }}</FbLabel>
                     <FbInput
@@ -251,6 +260,7 @@ onMounted (() => {
                         type="password"
                         name="password"
                         autocomplete="new-password"
+                        :placeholder="t ('new_password_placeholder')"
                         :invalid="!! errors.password" />
                     <InputError :message="errors.password" />
                 </div>
@@ -265,15 +275,18 @@ onMounted (() => {
                         type="password"
                         name="password_confirmation"
                         autocomplete="new-password"
+                        :placeholder="t ('new_password_confirmation_placeholder')"
                         :invalid="!! errors.password_confirmation" />
                     <InputError :message="errors.password_confirmation" />
                 </div>
             </div>
 
-            <FbButton type="submit" :disabled="isSaving">
-                <FbSpinner v-if="isSaving" />
-                {{ t ("save_changes") }}
-            </FbButton>
+            <div :class="adminSectionFooterClass">
+                <FbButton type="submit" class="ms-auto inline-flex items-center gap-2 px-3 py-1.5 text-xs" :disabled="isSaving">
+                    <FbSpinner v-if="isSaving" class="h-4 w-4" />
+                    {{ t ("save_changes") }}
+                </FbButton>
+            </div>
         </template>
     </form>
 </template>

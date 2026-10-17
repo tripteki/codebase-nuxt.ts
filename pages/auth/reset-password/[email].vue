@@ -67,7 +67,7 @@ async function submit (event: Event): Promise<void> {
             errors.value = parseApiErrors (response, t ("something_went_wrong"));
         } else if (response?.success) {
             await navigateTo ({
-                path: "/admin/auth/login",
+                path: "/auth/login",
                 query: { status: t ("password_reset") },
             });
         } else {
@@ -85,7 +85,7 @@ async function submit (event: Event): Promise<void> {
     <AuthLayout
         :title="t ('reset_password_title')"
         :description="t ('reset_password_description')">
-        <form novalidate @submit.prevent="submit">
+        <form method="post" novalidate @submit.prevent="submit">
             <AlertError :message="errors.general" />
 
             <div class="grid gap-6">
@@ -97,7 +97,8 @@ async function submit (event: Event): Promise<void> {
                         name="email"
                         autocomplete="email"
                         :model-value="email"
-                        readonly />
+                        readonly
+                        :placeholder="t ('email_placeholder')" />
                     <InputError :message="errors.email" />
                 </div>
 

@@ -14,6 +14,7 @@ withDefaults(
         tabindex?: number | string;
         wrapperClass?: string;
         labelClass?: string;
+        inputClass?: string;
     }>(),
     {
         indeterminate: false,
@@ -30,7 +31,8 @@ withDefaults(
             :name="name"
             :indeterminate="indeterminate"
             :disabled="disabled"
-            :tabindex="tabindex" />
+            :tabindex="tabindex"
+            :class="inputClass" />
         <label
             :for="id"
             :class="cn(fbCheckboxLabel, labelClass, disabled && 'cursor-not-allowed opacity-50')">

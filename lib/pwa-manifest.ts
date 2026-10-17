@@ -1,3 +1,4 @@
+import { formatAppName, } from "./app-name";
 import { defaultBrandColors, } from "./branding";
 
 export type PwaManifestIcon = {
@@ -93,13 +94,11 @@ export function syncPwaHead (options: {
     fallbackAppName: string;
     themeColor?: string;
 }): void {
-    const formattedName =
-        options.fallbackAppName.charAt (0).toUpperCase () +
-        options.fallbackAppName.slice (1);
+    const formattedName = formatAppName (options.fallbackAppName);
     const manifest = createPwaManifest ({
         name: formattedName,
-        shortName: options.fallbackAppName,
-        description: `The ${options.fallbackAppName} WebApp!`,
+        shortName: formattedName,
+        description: `The ${formattedName} WebApp!`,
         themeColor: options.themeColor ?? defaultBrandColors.primary,
     });
 

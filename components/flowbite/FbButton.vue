@@ -7,14 +7,15 @@ import {
     fbButtonOutline,
     fbButtonPrimary,
     fbButtonSecondary,
+    fbButtonTertiary,
 } from "@/lib/flowbite-classes";
 import { cn, } from "@/lib/utils";
 
 const props = withDefaults(
     defineProps<{
         type?: "button" | "submit" | "reset";
-        variant?: "primary" | "outline" | "ghost" | "danger" | "secondary";
-        size?: "default" | "sm" | "lg" | "icon";
+        variant?: "primary" | "outline" | "ghost" | "danger" | "secondary" | "tertiary";
+        size?: "default" | "xs" | "sm" | "lg" | "icon";
         disabled?: boolean;
         to?: string;
         href?: string;
@@ -39,6 +40,8 @@ const variantClass = computed(() => {
             return fbButtonDanger;
         case "secondary":
             return fbButtonSecondary;
+        case "tertiary":
+            return fbButtonTertiary;
         default:
             return fbButtonPrimary;
     }
@@ -47,6 +50,10 @@ const variantClass = computed(() => {
 const sizeClass = computed(() => {
     if (props.size === "lg") {
         return "px-6 py-3 text-base";
+    }
+
+    if (props.size === "xs") {
+        return "gap-1.5 px-2 py-1 text-xs";
     }
 
     if (props.size === "sm") {

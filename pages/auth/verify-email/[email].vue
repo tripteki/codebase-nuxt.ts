@@ -122,7 +122,7 @@ onMounted (async (): Promise<void> => {
                 <div class="flex flex-col gap-2">
                     <FbButton
                         class="w-full"
-                        to="/admin/auth/login">
+                        to="/auth/login">
                         {{ t ("log_in") }}
                     </FbButton>
 
@@ -145,12 +145,12 @@ onMounted (async (): Promise<void> => {
                     <FbButton
                         variant="outline"
                         class="w-full"
-                        to="/admin/auth/login">
+                        to="/auth/login">
                         {{ t ("go_to_login") }}
                     </FbButton>
 
                     <TextLink
-                        to="/admin/auth/register"
+                        to="/auth/register"
                         class="text-center text-sm">
                         {{ t ("sign_up") }}
                     </TextLink>

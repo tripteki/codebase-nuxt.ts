@@ -12,20 +12,20 @@ type AdminListStateKeys = {
     actionId?: string;
 };
 
-export function useAdminListState<T>(
+export function useAdminListState<T> (
     namespace: string,
     keys: AdminListStateKeys = {}
 ) {
-    const items = useState<T[]>(keys.items ?? namespace, () => []);
-    const meta = useState<PaginatedMeta | undefined>(
+    const items = useState<T[]> (keys.items ?? namespace, () => []);
+    const meta = useState<PaginatedMeta | undefined> (
         keys.meta ?? `${namespace}-meta`,
         () => undefined
     );
-    const isLoading = useState<boolean>(
+    const isLoading = useState<boolean> (
         keys.isLoading ?? `${namespace}-loading`,
         () => false
     );
-    const actionId = useState<string | null>(
+    const actionId = useState<string | null> (
         keys.actionId ?? `${namespace}-action-id`,
         () => null
     );
@@ -38,7 +38,7 @@ export function useAdminListState<T>(
     };
 }
 
-export function parsePaginatedResult<T>(
+export function parsePaginatedResult<T> (
     result: CallResult
 ): { items: T[]; meta: PaginatedMeta | undefined } | null {
     if (! result.isSuccess || ! result.data) {
@@ -56,12 +56,20 @@ export function parsePaginatedResult<T>(
     }
 
     if ("totalPage" in payload || "lastPage" in payload) {
+        const items = Array.isArray (payload.data) ? payload.data : [];
+        const currentPage = payload.currentPage ?? 1;
+        const perPage = payload.perPage ?? items.length;
+        const from = items.length > 0 ? (currentPage - 1) * perPage + 1 : undefined;
+
         return {
-            items: Array.isArray (payload.data) ? payload.data : [],
+            items,
             meta: {
-                current_page: payload.currentPage,
+                current_page: currentPage,
                 last_page: payload.lastPage ?? payload.totalPage,
                 per_page: payload.perPage,
+                total: typeof payload.total === "number" ? payload.total : undefined,
+                from,
+                to: from === undefined ? undefined : from + items.length - 1,
             },
         };
     }
@@ -72,12 +80,12 @@ export function parsePaginatedResult<T>(
     };
 }
 
-export function applyPaginatedResult<T>(
+export function applyPaginatedResult<T> (
     result: CallResult,
     items: Ref<T[]>,
     meta: Ref<PaginatedMeta | undefined>
 ): void {
-    const parsed = parsePaginatedResult<T>(result);
+    const parsed = parsePaginatedResult<T> (result);
 
     if (! parsed) {
         return;

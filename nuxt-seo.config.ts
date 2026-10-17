@@ -1,7 +1,9 @@
 "use strict";
 
+import { formatAppName, } from "./lib/app-name";
+
 const appName = process.env.NUXT_PUBLIC_APP_NAME || "codebase";
-const formattedAppName = appName.charAt (0).toUpperCase () + appName.slice (1);
+const formattedAppName = formatAppName (appName);
 
 const seoConfig = {
 

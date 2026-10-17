@@ -1,4 +1,20 @@
-import { ref, watch, onMounted, type Ref, } from "vue";
+import { onMounted, watch, type Ref, } from "vue";
+
+function applyTheme (value: string): void {
+    if (! import.meta.client) {
+        return;
+    }
+
+    const root = document.documentElement;
+
+    root.classList.remove ("light", "dark");
+
+    if (value === "dark") {
+        root.classList.add ("dark");
+    } else {
+        root.classList.add ("light");
+    }
+}
 
 export function useTheme (): {
     theme: Ref<string>;
@@ -6,45 +22,42 @@ export function useTheme (): {
     toggleTheme: () => void;
     mounted: Ref<boolean>;
 } {
-    const theme = ref<string>("light");
-    const mounted = ref<boolean>(false);
+    const theme = useState<string> ("app-theme", () => "dark");
+    const mounted = useState<boolean> ("app-theme-mounted", () => false);
+    const listenerReady = useState<boolean> ("app-theme-listener-ready", () => false);
+    const colorMode = useColorMode ();
 
-    onMounted ((): void => {
-        mounted.value = true;
+    if (import.meta.client && ! listenerReady.value) {
+        listenerReady.value = true;
 
-        const storedTheme = localStorage.getItem ("theme");
+        onMounted ((): void => {
+            mounted.value = true;
 
-        if (storedTheme) {
-            theme.value = storedTheme;
-        } else {
-            theme.value = window.matchMedia ("(prefers-color-scheme: dark)")
-                .matches
-                ? "dark"
-                : "light";
-        }
+            const storedTheme = localStorage.getItem ("theme");
 
-        applyTheme (theme.value);
-    });
+            if (storedTheme === "dark" || storedTheme === "light") {
+                theme.value = storedTheme;
+            }
 
-    watch (theme, (value: string): void => {
-        if (! mounted.value) {
-            return;
-        }
+            applyTheme (theme.value);
 
-        applyTheme (value);
-        localStorage.setItem ("theme", value);
-    });
+            if (colorMode.preference !== theme.value) {
+                colorMode.preference = theme.value;
+            }
+        });
 
-    function applyTheme (value: string): void {
-        const root = document.documentElement;
+        watch (theme, (value: string): void => {
+            if (! mounted.value) {
+                return;
+            }
 
-        root.classList.remove ("light", "dark");
+            applyTheme (value);
+            localStorage.setItem ("theme", value);
 
-        if (value === "dark") {
-            root.classList.add ("dark");
-        } else {
-            root.classList.add ("light");
-        }
+            if (colorMode.preference !== value) {
+                colorMode.preference = value;
+            }
+        });
     }
 
     function setTheme (newTheme: string): void {

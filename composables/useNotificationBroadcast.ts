@@ -30,6 +30,10 @@ export function useNotificationBroadcast () {
         if (typeof payload.id === "string" && payload.id.trim () !== "") {
             await handleRealtimeNotification (payload.id);
         }
+
+        if (import.meta.client) {
+            window.dispatchEvent (new CustomEvent ("admin:notifications-refresh"));
+        }
     }
 
     async function subscribe (): Promise<void> {

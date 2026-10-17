@@ -4,14 +4,15 @@ const { name, version, } = require ("./package.json");
 import tailwindcss from "@tailwindcss/vite";
 import i18n from "./nuxt-i18n.config";
 import seo from "./nuxt-seo.config";
+import { formatAppName, } from "./lib/app-name";
 import { defaultBrandColors, } from "./lib/branding";
 import { createPwaManifest, } from "./lib/pwa-manifest";
 import { PWA_NAVIGATION_DENYLIST, } from "./lib/pwa-navigation-denylist";
 import { pwaSplashLinks, } from "./lib/pwa-splash-links";
 
 const appName = process.env.NUXT_PUBLIC_APP_NAME || name || "codebase";
-const formattedAppName = appName.charAt (0).toUpperCase () + appName.slice (1);
-const appDescription = `The ${appName} WebApp!`;
+const formattedAppName = formatAppName (appName);
+const appDescription = `The ${formattedAppName} WebApp!`;
 const appUrl = process.env.NUXT_PUBLIC_APP_URL || "http://frontend.localhost";
 const webPushEnabled = Boolean (process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY?.trim ());
 const isDev = process.env.NODE_ENV === "development";
@@ -54,7 +55,7 @@ export default defineNuxtConfig ({
             reverbPort: process.env.NUXT_PUBLIC_REVERB_PORT || "8080",
             reverbScheme: process.env.NUXT_PUBLIC_REVERB_SCHEME || "http",
             vapidPublicKey: process.env.NUXT_PUBLIC_VAPID_PUBLIC_KEY || "",
-            realtimeDriver: process.env.NUXT_PUBLIC_REALTIME_DRIVER || "echo",
+            realtimeDriver: process.env.NUXT_PUBLIC_REALTIME_DRIVER || "socketio",
             env: process.env.NUXT_PUBLIC_APP_ENV || "local",
             language: process.env.NUXT_PUBLIC_APP_LANG || "en",
         },
@@ -103,7 +104,7 @@ export default defineNuxtConfig ({
 
         manifest: createPwaManifest ({
             name: formattedAppName,
-            shortName: appName,
+            shortName: formattedAppName,
             description: appDescription,
         }),
 
@@ -129,9 +130,7 @@ export default defineNuxtConfig ({
         "/workbox-*.js": { prerender: false, },
         "/manifest.webmanifest": { prerender: false, },
         "/api/pwa/manifest": { prerender: false, },
-        "/auth/login": { redirect: "/admin/auth/login", },
-        "/auth/register": { redirect: "/admin/auth/register", },
-        "/auth/forgot-password": { redirect: "/admin/auth/forgot-password", },
+        "/admin/auth/**": { redirect: "/auth/**", },
     },
 
     auth: {
@@ -194,7 +193,7 @@ export default defineNuxtConfig ({
 
             pages: {
 
-                login: "/admin/auth/login",
+                login: "/auth/login",
             },
         },
     },
@@ -247,6 +246,9 @@ export default defineNuxtConfig ({
     colorMode: {
 
         classSuffix: "",
+        preference: "dark",
+        fallback: "dark",
+        storageKey: "theme",
     },
 
     app: {

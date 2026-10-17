@@ -8,6 +8,7 @@ import {
     precacheAndRoute,
 } from "workbox-precaching";
 import { NavigationRoute, registerRoute, } from "workbox-routing";
+import { NetworkOnly, } from "workbox-strategies";
 
 import { PWA_NAVIGATION_DENYLIST, } from "../lib/pwa-navigation-denylist";
 
@@ -63,12 +64,30 @@ self.addEventListener ("notificationclick", (event: NotificationEvent) => {
     );
 });
 
-precacheAndRoute (self.__WB_MANIFEST);
+const precacheManifest = self.__WB_MANIFEST;
+
+precacheAndRoute (precacheManifest);
 cleanupOutdatedCaches ();
-registerRoute (
-    new NavigationRoute (createHandlerBoundToURL ("/"), {
-        denylist: PWA_NAVIGATION_DENYLIST,
-    })
-);
+
+const hasOfflineDocument = precacheManifest.some ((entry) => {
+    const url = typeof entry === "string" ? entry : entry.url;
+
+    return url === "/" || url === "/index.html" || url === "index.html";
+});
+
+if (hasOfflineDocument) {
+    registerRoute (
+        new NavigationRoute (createHandlerBoundToURL ("/"), {
+            denylist: PWA_NAVIGATION_DENYLIST,
+        })
+    );
+} else {
+    registerRoute (
+        ({ request, url, }) =>
+            request.mode === "navigate"
+            && ! PWA_NAVIGATION_DENYLIST.some ((pattern) => pattern.test (`${url.pathname}${url.search}`)),
+        new NetworkOnly ()
+    );
+}
 clientsClaim ();
 self.skipWaiting ();

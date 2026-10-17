@@ -1,5 +1,6 @@
 import { defineNuxtPlugin, } from "#imports";
 
+import { authorizationHeader, } from "@/lib/access-token";
 import {
     resolveServiceWorkerRegistration,
     urlBase64ToUint8Array,
@@ -97,7 +98,7 @@ export default defineNuxtPlugin ({
             await $fetch ("/api/webpush/subscribe", {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: authorizationHeader (accessToken),
                 },
                 body: subscription.toJSON (),
             });

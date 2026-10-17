@@ -7,7 +7,7 @@ function canRenderDuringAuthLoad (auth: ReturnType<typeof useAuth>): boolean {
     return Boolean (auth.token?.value?.trim ());
 }
 
-export function useRequireAuth (redirectTo = "/admin/auth/login"): {
+export function useRequireAuth (redirectTo = "/auth/login"): {
     canRender: ComputedRef<boolean>;
 } {
     const auth = useAuth ();
